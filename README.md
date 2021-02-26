@@ -6,12 +6,12 @@ Cette version de la balise DGAC de signalement électronique à distance pour dr
 La réalisation a été faite avec un ESP01 (ESP8266) et un GPS QUECTEL L80 ce qui donne une réalisation très compacte, mais bien d'autres  possibilités existent avec par exemple un ESP8266 D1, un GSP BN220 etc…
 
 ## Principales modifications:
-- Extension de l'interface Web
-- Ajout d'une fonction d'enregistrement des traces dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs). 
-- Modification de l'identificateur de la balise: l'adresse MAC est utilisée comme numéro de série.
-- Ajout d'une fonction de mise à jour du logiciel à travers la liaison WiFI (OTA Over The Air)
-- Ajout d'un portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l'interface utilisateur, sans besoin de donner une adresse IP
-- Interface utilisateur pour la gestion des préférences, la gestion "système" etc …
+- Extension de l'**interface Web**
+- Ajout d'une fonction d'**enregistrement des traces** dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs). 
+- Modification de l'**identificateur de la balise**: l'adresse MAC est utilisée comme numéro de série.
+- Ajout d'une fonction de mise à jour du logiciel à travers la liaison WiFI (**OTA** Over The Air)
+- Ajout d'un **portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l'interface utilisateur, sans besoin de donner une adresse IP
+- Interface utilisateur pour la **gestion des préférences**, la gestion "système" etc …
 
 ## Compilation:
 - Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS)
