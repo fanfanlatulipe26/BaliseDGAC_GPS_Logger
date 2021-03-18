@@ -14,27 +14,31 @@ La réalisation a été faite avec un ESP01 (ESP8266) et un GPS QUECTEL L80 ce q
 - Interface utilisateur pour la **gestion des préférences**, la gestion "système" etc …
 
 ## Compilation:
-- Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS)
-- Le fichier compilé avec option OTA occupe environ 370Kb et si on veut maximiser la place laissée au système de gestion de fichiers on peut choisir dans l'IDE Arduino, pour une module ESP01 un map mémoire FS 256Kb/OTA 375kb
+- Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS, génération d'une page statistiques etc ...)
+- Le fichier compilé avec option OTA occupe environ 373Kb et si on veut maximiser la place laissée au système de gestion de fichiers on peut choisir dans l'IDE Arduino, pour une module ESP01 une map mémoire FS 256Kb/OTA 375kb
+Avec les options OTA et STA (statistiques) le fichier compilé occupe environ 378Kb et il faut choisir une map mémoire FS 192kb/OTA 406kb
 Outil/Type de Carte "Generic ESP8266 Module"   Flash Size 1MB(FS:256KB OTA ¨375KB) ce qui permet d'enregistrer plusieurs heures de vols.
 Sans OTA on peut choisir un file system de 512KB
+- Pour une premier chargement du programme il est conseillé d'utiliser l'option Outils/Erase Flash: "All Flash Contents"
 - Les librairies LittleFS, DNSServer, EEPROM sont installées en même temps que le SDK ESP8266.
 
 |   ![](/img/cockpit_LI.jpg) | ![](/img/traces.png)  |
 | ------------ | ------------ |
 
-Le logiciel efface automatiquement les fichiers les plus anciens  quand la place manque dans la mémoire. Le fichier le plus ancien, le plus récent et le plus volumineux sont mis en valeur.  
-Les points de trace sont enregistrés à la même cadence que l'émission des trames Beacon, dès que le fix GPS est fait, et éventuellement après que la balise se soit déplacée de N mètres(paramétrable).  
-On peut importer ces fichiers CSV dans Google Maps pour visualiser:  
-Google Maps/Menu/Vos adresses/Cartes/Créer une carte/Importer  
-On peut aussi les transformer en fichier GPX, KML  etc avec par exemple https://www.gpsvisualizer.com/   
-Etc …
+Si il y a plus de 4 fichiers de traces, le logiciel efface automatiquement les fichiers les plus anciens  quand la place manque dans la mémoire. Le fichier le plus ancien, le plus récent et le plus volumineux sont mis en valeur.  
+La page "Péférences" permet de choisir le format de téléchargement des traces CSV ou GPX et la même trace peut être télécharger dans les 2 formats. Les traces CSV sont plus faciles à analyser dans Excel par exemple, alors que un site comme https://www.geo.javawa.nl/trackanalyse/ permet une analyse fine, segment par segment de traces GPX.On peut importer ces fichiers CSV dans Google Maps pour visualisation: 
+     Google Maps/Menu/Vos adresses/Cartes/Créer une carte/Importer  
+ou les transformer en fichier GPX, KML  etc avec par exemple https://www.gpsvisualizer.com/   
+L'enregistrement des points de trace ne se fait que lorsque la balise est en mouvement et est totalement décorrélé de l'émission des trames d'identification.
+La page "Préférences" permet de choisir la distance minimale qui provoque l'enregitrement, dès que le fix GPS est fait.
+La vitesse de transmission du GPS et sa fréquence de rafraichissement sont aussi sélectionées sur cette page (38400Bds et 10Hz conseillés)
+
+…
 
 ![](/img/preferences.png)
-
-La page" préférences "permet de choisir le contenu de la trace, sa mise en œuvre etc. Les coordonnées latitude/longitude sont toujours enregistrées.  
+ 
 Pour l'aspect WiFi, par défaut le réseau est ouvert (pas de mot de passe) et l'adresse IP est 192.168.4.1  
-Le portail captif permet une connexion aisée, sans le besoin de donner l'adresse IP (Fonctionne très bien sous Windows avec Firefox, Chrome, Edge. Est un peu plus capricieux sous Androiïd où il suffit de donner une adresse pouvant être valide comme xx.fr !!)  
+Le portail captif permet une connexion aisée, sans le besoin de donner l'adresse IP (Fonctionne très bien sous Windows avec Firefox, Chrome, Edge. Est un peu plus capricieux sous Android où il suffit de donner une adresse pouvant être valide comme xx.fr !!)  
 Le bouton ***Reset*** redémarre la balise et ***Reset Usine*** restaure les préférences à leurs valeurs par défaut.  
 ***Format*** réinitialise le système de gestion de fichiers.  
 ***OTA*** permet une mise à jour du logiciel par la liaison WiFi.  
@@ -42,9 +46,5 @@ Le bouton ***Reset*** redémarre la balise et ***Reset Usine*** restaure les pr�
 
 # Enjoy !  Les commentaires sont les bienvenus.
 #### Idées de développements futurs
-- Simplification de l'interface: je ne crois pas que le choix adresse Ip /gateway/sous réseau ait de l'intérêt
 - Arrêt du webserver /AP après N minutes ?? pour ne pas interférer avec le 2.4G de la télécommande ??
-- Choix du format trace CSV / GPX  (GPX plus coûteux en place disque)
-- Choix de la fréquence de l'enregistrement de la trace indépendante de l'émission Beacon (périodicité, déplacement max)
-- Statistiques sur l'utilisation du système de fichiers littleFS ( durée écriture de la trace …). 
-- Ne garder que les N derniers fichiers ? (si problèmes de performance en écriture de llitleFS)
+- ???
