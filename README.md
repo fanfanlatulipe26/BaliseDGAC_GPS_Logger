@@ -43,14 +43,15 @@ Le bouton ***Reset*** redémarre la balise et ***Reset Usine*** restaure les pr�
 Chaque point de trace occupe 20 octets en mémoire, ce qui permet d'enregistrer environ 12000 points dans une partition filesystem de 256Ko. Avec un modèle volant à 20m/s (soit environ 70km/h) et en choisissant d'enregistrer 1 point pour chaque déplacement de 10m on pourra donc enregistrer environ 1h30 de vol. 
 Le GPS met à jour ses mesures au maximum à 10hz soit toutes les 0.1s ce qui donne un enregistrement de 20mn seulement dans les mêmes conditions de vitesse si on choisit d'enregistrer la trace tous les 2m.
 Pour un modèle volant au dessus de 50km/h (14 m/s)  il est illusoire de vouloir enregistrer une trace avec des points distants de 1m .....
-Si besoin est, pour quelques dizaines de centimes il est possible d'augmenter la mémoire d'un ESP8266  jusqu'à 16mb `:blush:`
+
+Si besoin est, pour quelques dizaines de centimes il est possible d'augmenter la mémoire d'un ESP8266  jusqu'à 16mb ;-)
 
  ## Compilation
 - Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS, génération d'une page [statistiques](#génération-de-statistiques) etc ...)
 - Le fichier compilé avec option OTA occupe environ 373Kb et si on veut maximiser la place laissée au système de gestion de fichiers on peut choisir dans l'IDE Arduino, pour une module ESP01 une map mémoire FS 256Kb/OTA 375kb
 Avec les options OTA et STA (statistiques) le fichier compilé occupe environ 378Kb et il faut choisir une map mémoire FS 192kb/OTA 406kb
 Outil/Type de Carte "Generic ESP8266 Module"   Flash Size 1MB(FS:256KB OTA ¨375KB) ce qui permet d'enregistrer plusieurs heures de vols.
-Sans OTA on peut choisir un file system de 512KB
+Sans OTA on peut choisir un filesystem de 512KB
 - Pour un premier chargement du programme il est conseillé d'utiliser l'option Outils/Erase Flash: "All Flash Contents"
 - Les librairies LittleFS, DNSServer, EEPROM sont installées en même temps que le SDK ESP8266.
 ## Modules GPS
