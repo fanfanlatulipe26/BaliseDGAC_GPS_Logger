@@ -3,325 +3,139 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /*------------------------------------------------------------------------------
 */
 #include "fsBalise.h"
+#include "fs_GPS.h"
 #include "fs_options.h"
+#include "fs_pagePROGMEM.h"
 #include <LittleFS.h>
 #include <EEPROM.h>
 extern ESP8266WebServer server;
+extern boolean traceFileOpened;
+extern bool fileSystemFull;
+extern String messAlarm;
+
+extern TinyGPSPlus gps;
+
 struct pref preferences;
 struct pref factoryPrefs;
-//  ATTENTION: il faut conditionner la compilation du code, sinonle linker
-//            va tout prendre, même si on veut une version mini sans OTA...
-
-
-
-#ifdef fs_OTA
-char pageOTA[] PROGMEM = R"=====(
-<form class = "card" method='POST' id='upload_form' enctype='multipart/form-data'>
-<input type='file' name='update' >
-<input type='button' onclick = 'uploadFile()' style= 'background-color: red;' value='Update'>
-</form>
-<div>
-<progress id="bar" class = "card" value="0" max="100"></progress>
-</div>
-<div id="res" class="card"></div>
-<script>
-function uploadFile() {
-gel('res').innerHTML = "Attendre un message ERREUR ou OK !!";
-var form = gel('upload_form');
-var data = new FormData(form);
-var xhr = new window.XMLHttpRequest();
-xhr.upload.addEventListener('progress', h_pro, false);
-xhr.upload.addEventListener('loadstart', h_loadstart, false);
-xhr.upload.addEventListener('abort', h_abort, false);
-xhr.upload.addEventListener('error', h_error, false);
-xhr.upload.addEventListener('load', h_load, false);
-xhr.upload.addEventListener('timeout', h_timeout, false);
-xhr.upload.addEventListener('loadend', h_pro, false);
-xhr.open('POST','/update');
-xhr.send(data);
-xhr.onreadystatechange = function () {
-gel('bar').value = 0;
- if(xhr.readyState == 4 ) gel('res').innerHTML = xhr.responseText;
- };
-}
-function h_loadstart (evt) { console.log("h_loadstart");}
-function h_abort (evt) { alert("abort");}
-function h_error (evt) { alert("h_error");gel('res').innerHTML = "ERREUR !!";}
-function h_load (evt) { console.log("load");}
-function h_timeout (evt) { alert("h_timeout");}
-function h_loadend (evt) { alert("h_loadend");}
- function h_pro (evt) {
- console.log ("pro");
-  if (evt.lengthComputable) {
-    var per = evt.loaded / evt.total;
-    gel('bar').value = Math.round(per * 100) ;
-  }
-}
- </script>
-)=====";
-#endif 
-
-char fs_style[] PROGMEM = R"=====(
-<!doctype html>
-<head>
-<meta charset="utf-8">
-<title>Balise</title>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META HTTP-EQUIV="Expires" CONTENT="-1">
-<style>
-#map{height:1000px;}
-.card{
-padding:5px;
-width:100%;
-background: #1f98bd81;
-border-radius: 10px;
-color: #000;
-margin:0px;
-font-size: 4vw;
-text-align: center;
-   /* line-height: 0%; */
-}
-.gauche{
-text-align: left;
-}
-.b1{
-background-color: LimeGreen;
-}  
-.b2{
-background-color: red; 
-}
-
-input,button{
-font-size: 4vw;
-border: 5px solid  black ;
-border-radius: 10px;
-}
-table {
-margin: auto;
-}
-
-table,td,th{
-border: 4px solid lime;
-border-collapse: collapse;
-font-size: 4vw;
-}
-.nobord{
-border: 0px;
-}
-input[type=checkbox] + label {
-} 
-input[type=checkbox]:checked + label {
-  background-color: #4CAF50;
-} 
-</style>
-<script>
-function D1() {return confirm("Effacer ce fichier ?");}
-function gel(id) {return document.getElementById(id);}
-</script>
-</head>
-
-)=====";
-
-char topMenu[] PROGMEM = R"=====(
-<body>
-<div class = "card">
-<table class = 'nobord'>
-  <tr>
-    <td class = 'nobord'><button class='b1' onclick="document.location='/'"> Cockpit</button></td>
-    <td class = 'nobord'><button class='b1' onclick="document.location='/spiff'"> Traces </button></td>
-    <td class = 'nobord'><button class='b1' onclick="document.location='/optionsSysteme'"> Préférences / Système</button></td>
-  </tr>
-</table>
-</div>
-)=====";
-
-char menuSysteme[] PROGMEM = R"=====(
-  <div class = 'card'>
-  <button class='b1' onclick="document.location='/OTA_'">MaJ OTA</button>
-
-    <button class='b1' onclick="document.location='/resetUsine'">Reset Usine </button>
-     <button class='b1' onclick="document.location='/reset'">Reset </button>
-  <button class='b2' onclick = 'if(confirm("Voulez vous vraiment reformater le syst&egrave;me de fichiers\n et tout effacer ?")){document.location="/formatage_"}'>Formatage</button>
-  </div>
-
-)=====";
-
-char pageOption[] PROGMEM = R"=====(
-<div id="d1" class = "card , gauche" >
-<form action="/optionLogProcess">
-  <b>Préférences gestion de la trace</b><br>
- <input type="checkbox" id="logOn" name="logOn"  checked>
-<label for="logOn">Activer la trace</label><br>  
-  &nbsp; &nbsp; <label for="logAfter">    après un déplacement de </label> 
- <input type="text" id="logAfter" name="logAfter" pattern="[0-9]{1,}" size="1" required value="x" > mètre(s).<br>   
- <input type="checkbox" id="logVitesse" name="logVitesse" > 
-  <label for="logVitesse">Enregistrer la vitesse</label><br>  
- <input type="checkbox" id="logAltitude" name="logAltitude" >
-    <label for="logAltitude">Enregistrer  l'altitude</label><br> 
- <input type="checkbox" id="logHeure" name="logHeure" >
-    <label for="logHeure">Enregistrer  l'heure</label> 
-    <br><input type="submit" value="Submit">
-</form>
-  <hr>  <b>Préférences WiFi (attention !!)</b> 
- <form action="/optionWiFiProcess">
- <label for="password">Mot de passe</label>
- <input type="text" id="password" name="password" size ="8" minlength="8"  maxlength="8" value=""><br>
- <label for="local_ip">Adresse IP</label>
- <input type="text" id="local_ip" name="local_ip" size="14" maxlength="15" value="x.x.x.x"><br>
- <label for="gateway">Gateway</label> 
- <input type="text" id="gateway" name="gateway" size="14" maxlength="15" value="x.x.x.x"><br> 
- <label for="subnet">Sous réseau</label> 
- <input type="text" id="subnet" name="subnet" size="14" maxlength="15" value="x.x.x.x">  
-<br><input type="submit" value="Submit">
-</form>
-</div>
-  </body>
-</html>
-)=====";
-
-
-char byeBey[] PROGMEM = R"=====(
-<div id="d1" class = "card , gauche" >
-La balise redémarre.   Bye Bye !!
-</div>
-  </body>
-</html>
-)=====";
-char cockpit[] PROGMEM = R"=====(
-<script>
-setInterval(function() {
-getData();
-}, 3000); //3000mSeconds update rate
-function getData() {
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-// chaine reçue   numero$valeur;numero$valeur ...
-if (this.readyState == 4 && this.status == 200) {
-this.responseText.split(';').forEach((item)=>{
-      var i = item.split('$')[0].trim();   // ??????????????????????????????????????
-    var val = item.split('$')[1].replace(/"/g,'').trim();
-  document.getElementById("Value"+i).innerHTML = val;
-});
-}
-};
-xhttp.open("GET", "readValues", true);
-xhttp.send();
-}
-getData();
-</script>
-<div class="card">
-<p><span id="Value0">0</span><p>
-<p><span id="Value7">0</span><p>
-<table border="1" style="line-height: 100%;">
-<tr>
-<td><span id="Value4">0</span></td>
-<td><span id="Value5">0</span></td>
-<td><span id="Value6">0</span></td>
-</tr>
-<tr>
-<td><span id="Value8">0</span></td>
-<td><span id="Value2">0</span></td>
-<td><span id="Value3">0</span></td>
-</tr>
-<tr>
-<td><span id="Value1">0</span></td>
-<td><span id="Value9"></span></td>
-<td><span id="Value13"></span></td>
-</tr>
-<tr>
-<td><span id="Value10">ATTENTE</span></td>
-<td><span id="Value11"></span></td>
-<td><span id="Value12"></span></td>
-</tr>
-</table>
-</div>
-</body>
-</html>
-)=====";
 
 void sendChunkDebut ( bool avecTopMenu ) {
   server.chunkedResponseModeStart(200, "text/html");
   server.sendContent_P(fs_style);
   if (avecTopMenu)server.sendContent_P(topMenu);
 }
-void handleCockpit_() {
+void handleCockpit() {
   sendChunkDebut ( true );  // debut HTML style, avec topMenu
   server.sendContent_P(cockpit);
   server.chunkedResponseFinalize();
 }
 
-
-
-// Ecriture d'une ligne csv dnas le fichier de log
+// Ecriture d'une ligne csv ou GPX dans le fichier de log.
+// Attention: le fichier GPX a une trace non fermer. Le compléter lors  d'un download
 // Si le file system est plein, on efface les fichiers les plus anciens.
-// Dans ce cas on prda une ligne de log
+// Dans ce cas on perdra une ligne de log
 // Return:  true   ecriture OK; false sinon
 //    (le file system est surement plein, avec un seul fichier
 //
-char logFileName[25] = "";  // en global , car utilisé aussi dans options.
-bool fs_logEcrire(TinyGPSPlus &gps) {
-  // return; // +++++++++++++++++++++++++++++++++++++++++++++ debug
-  char timeBuffer[16];
-  String logMessage;
 
-  if (logFileName[0] == 0)  // on cree une seule fois le fichier dans un run
-    sprintf(logFileName, "/%04u-%02u-%02u_%02u-%02u.csv", gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour(), gps.time.minute() );
+void logRingBuffer(char ringBuffer[], int sizeBuffer, int indexBuffer) {
+  // char logFileName[] = "logRingBuf.txt";
+  char logFileName[] = "errorlog.txt";
+  File fileToAppend = LittleFS.open(logFileName, "a");
+  fileToAppend.println("\n=====================");
+  fileToAppend.printf("%u bauds,%uHz\n", preferences.baud, preferences.hz);
+  fileToAppend.println(indexBuffer);
+  fileToAppend.write(ringBuffer + indexBuffer, sizeBuffer - indexBuffer);
+  fileToAppend.write(ringBuffer, indexBuffer);
+  fileToAppend.println();
+  fileToAppend.close();
+  yield();
+}
+
+// Problème détecté avec la lecture du GPS. On enregistre des infos dans un log d'erreur.
+void logError(TinyGPSPlus &gps, float latLastLog, float lngLastLog , float segment) {
+  char logFileName[] = "errorlog.txt";
   bool isFileExist = LittleFS.exists(logFileName);
   File fileToAppend = LittleFS.open(logFileName, "a");
-  if (!fileToAppend) {
-    Serial.print(F("Error opening the file for appending ")); Serial.println(logFileName);
-    return removeOldest();
-  }
-  if (!isFileExist) { //Header
-    logMessage = "Latitude,Longitude";
-    if (preferences.logHeure) logMessage += ",Heure";
-    if (preferences.logVitesse) logMessage += ",Vitesse";
-    if (preferences.logAltitude) logMessage += ",Altitude";
-    int longeurEcrite =  fileToAppend.println(logMessage);
-    Serial.print(F(" Création fichier ")); Serial.println(logFileName);
-    if (longeurEcrite == 0) {
-      Serial.println(F("Erreur écriture"));
-      return removeOldest(); // on essaye de gagner de la place
-    }
-  }
+  //  if (!isFileExist) { //Header
+  fileToAppend.println("\nlocation.isValid,lat,lng,latLastLog,lngLastLog,segment,speed_km,alt_m,"
+                       "sat,hdop,year,month,day,hour,min,sec,centi,failedChecksum,passedChecksum\n");
+  // }
+  fileToAppend.printf("%s", gps.location.isValid() ? "T" : "F");
+  fileToAppend.printf(",%.6f,%.6f,%.6f,%.6f", gps.location.lat(), gps.location.lng(), latLastLog, lngLastLog);
+  fileToAppend.printf(",%.0f,%.2f,%.2f", segment, gps.speed.kmph(), gps.altitude.meters());
+  fileToAppend.printf(",%u,%i,%u,%u,%u", gps.satellites.value(), gps.hdop.value(), gps.date.year(), gps.date.month(), gps.date.day());
+  fileToAppend.printf(",%u,%u,%u,%u,%u,%u\n", gps.time.hour(), gps.time.minute(), gps.time.second(), gps.time.centisecond(),
+                      gps.failedChecksum(), gps.passedChecksum());
+  fileToAppend.close();
+}
 
-  sprintf(timeBuffer, "%02u:%02u:%02u", gps.time.hour(), gps.time.minute(), gps.time.second());
-  logMessage = String(gps.location.lat()) + "," + gps.location.lng();
-  if (preferences.logHeure) logMessage += "," + String(timeBuffer);
-  if (preferences.logVitesse) logMessage += "," + String(gps.speed.kmph());
-  if (preferences.logAltitude) logMessage += "," + String(gps.altitude.meters());
-  int longeurEcrite = fileToAppend.println(logMessage);
-  if (longeurEcrite == 0) {
-    Serial.println(F("Erreur écriture"));
+// Ecriture d'une ligne dans le trace file. En général le fichier est deja ouvert en mode append
+char traceFileName[25] = "";  // en global , car utilisé aussi dans  telechargement.
+File traceFile; // en global. Besoin dans le main et pour diwnload
+bool fs_ecrireTrace(TinyGPSPlus &gps) {
+  char timeBuffer[16];
+  String logMessage;
+  int longueurEcriture;
+  if (!traceFileOpened) {
+    if (traceFileName[0] == 0)  // on cree une seule fois le fichier dans un run
+      sprintf(traceFileName, "%04u-%02u-%02u_%02u-%02u", gps.date.year(), gps.date.month(), gps.date.day(),
+              gps.time.hour(), gps.time.minute());
+    if (!LittleFS.exists(traceFileName)) {
+      Serial.print(F("Création du fichier trace ")); Serial.println(traceFileName);
+      traceFile = LittleFS.open(traceFileName, "a");
+      traceFile.close();  // le creer et forcer son enregistrement
+    }
+    traceFile = LittleFS.open(traceFileName, "a");
+    if (!traceFile) {
+      Serial.print(F("Error opening the file for appending ")); Serial.println(traceFileName);
+      traceFile.close(); // just in case  ;-)
+      return removeOldest();
+    }
+    traceFileOpened = true;
+  }
+  // structure servant à stocker en binaire une ligne (un point) du log de trace
+  trackLigne_t trackLigne;;
+  trackLigne.lat = gps.location.lat();
+  trackLigne.lng = gps.location.lng();
+  trackLigne.hour = gps.time.hour(); // Hour (0-23) (u8)
+  trackLigne.minute = gps.time.minute(); // Minute (0-59) (u8)
+  trackLigne.second = gps.time.second(); // Second (0-59) (u8)
+  trackLigne.centisecond = gps.time.centisecond(); // 100ths of a second (0-99) (u8)
+  trackLigne.altitude = gps.altitude.meters();
+  trackLigne.speed = gps.speed.kmph();
+  longueurEcriture = traceFile.write((uint8_t *)&trackLigne, sizeof(trackLigne));
+  if (longueurEcriture != sizeof(trackLigne)) {
+    Serial.println(F("Erreur longueur écriture."));
+    traceFile.close();
+    traceFileOpened = false;
     return removeOldest(); // on essaye de gagner de la place
   }
-  fileToAppend.close();
   return true;
 }
 
 // Efface le fichier le plus ancien pour faire de la place
-//  (sauf si il y a un seul fichier ....)
-// Return true sion a fait de la place,  false sinon
+//  (sauf si il y a moins de 4 fichiers ...)
+// Return true si on a fait de la place,  false sinon
 bool removeOldest() {
-  Serial.println(F("Entrée remove oldest"));
+  int nbrFiles = 0;
   String oldest = "zzzzz", youngest = "";
   Dir dir = LittleFS.openDir("/");
   int tailleTotale = 0;
   while (dir.next()) {
     String fileName = dir.fileName();
-    Serial.println(fileName);
+    nbrFiles++;
     if (fileName < oldest ) {
       oldest = fileName;
     }
@@ -329,15 +143,12 @@ bool removeOldest() {
       youngest = fileName;
     }
   }
-  Serial.print(F("!")); Serial.print(oldest); Serial.print(F("!")); Serial.println(youngest);
-  if (oldest != "" && oldest != youngest) {
-    Serial.print(F("Cleanup. On efface: ")); Serial.println(oldest);
-    if (LittleFS.remove(oldest)) {
-      Serial.print(F(" On a efface: ")); Serial.println(oldest);
-      return true; // on a pu gagner de la place
-    }  
-    return false;  // on a rien pu faire: erreur permanente
+  if (  nbrFiles > 4) {
+    messAlarm = ""; // on va faire de la place dans la mémoire (?) .Enlever message alarme
+    fileSystemFull = false;
+    return LittleFS.remove(oldest);
   }
+  return false ;  // on a rien pu faire: erreur permanente ou moins de 4 fichiers
 }
 
 void listSPIFFS(String message) {
@@ -345,35 +156,40 @@ void listSPIFFS(String message) {
   int nbrFiles = 0, longest = 0;
   String oldest = "zzzzz", youngest = "";
   int idOldest = 0, idYoungest = 0, idLongest;
-  String response = "<div class = 'card'><form action='/delete_'  method='post'> <table><tr><th colspan='4'>" + message + "</th></tr>";
+  String response = "<script>window.setInterval(function(){window.location.replace('/spiff');},30000);</script>";  //  refresh 30 seconds.
+  response += "<div class='card'><form action='/delete_' method='post'><table><tr><th colspan='4'>" + messAlarm + "  " + message + "</th></tr>";
   server.sendContent(response);
   Dir dir = LittleFS.openDir("/");
   while (dir.next()) {
     String fileName = dir.fileName();
-
     //fs: File f = dir.openFile("r");
     File f = dir.openFile("r");
     if (!f) {
-      response = "<tr><td>" + fileName + "</td><td> Open error !!</td><td><\td><td><\td>\n";
+      response = "<tr><td>" + fileName + "</td><td>Open error !! </td><td><\td><td><\td>\n";
     }
     else {
       totalSize += f.size();
       nbrFiles++;
-      if (fileName < oldest ) {
-        oldest = fileName;
-        idOldest = nbrFiles;
+      if (fileName.substring(0, 1) == "2" ) {  // ne prendre en compte que les fichier de trace pour oldet/youger
+        if (fileName < oldest ) {
+          oldest = fileName;
+          idOldest = nbrFiles;
+        }
+        if (fileName > youngest ) {
+          youngest = fileName;
+          idYoungest = nbrFiles;
+        }
+        if (f.size() > longest) {
+          idLongest = nbrFiles;
+          longest = f.size();
+        }
       }
-      if (fileName > youngest ) {
-        youngest = fileName;
-        idYoungest = nbrFiles;
-      }
-      if (f.size() > longest) {
-        idLongest = nbrFiles;
-        longest = f.size();
-      }
+      // on génère explicitement un download="kkjhjk.zzz" car sinon cela ne marche pas bien sur certains systèmes
       response = "<tr><td id='" + String(nbrFiles) + "'>" + fileName + "</td><td id='L" + String(nbrFiles) + "'>" + (String)f.size() + "</td>\n";
-      response += "<td><button class='b2' type='submit' onclick='return D1()' name ='delete' value='" + fileName + "'>Effacer</button></td>\n";
-      response += "<td><a href='" + fileName + "' download='"+ fileName + "'><button class='b1' type='button'  >T&eacute;l&eacute;charger</button></a></td></tr>\n";
+      response += "<td><button class='b2' type='submit' onclick='return D1()' name='delete' value='" + fileName + "'>Effacer</button></td>\n";
+      response += "<td><a href='" + fileName + "' download='" + fileName  +
+                  ((fileName.charAt(0) == '2' ) ? ("." + String(preferences.formatTrace)) : "" ) +
+                  "'><button class='b1' type='button'>T&eacute;l&eacute;charger </button></a></td></tr>\n";
     }
     server.sendContent(response);
   }
@@ -388,32 +204,141 @@ void listSPIFFS(String message) {
   if (LittleFS.info(fs_info)) {
     size_t totalBytes;
     size_t usedBytes;
-    response += "<br>Nombre de traces: " + String(nbrFiles) + "<br>Taille totale:" + String(totalSize);
+    response += "<br>Nombre de traces: " + String(nbrFiles) + "<br>Taille totale: " + String(totalSize);
     response += "<br>totalBytes: " + String(fs_info.totalBytes) + "<br>usedBytes: " + String(fs_info.usedBytes) ;
   }
   else {
-    Serial.println(F("Erreur LittleFS.info"));
     response += "<br>Erreurs dans le système de fichier ";
   }
-  response += "</div></body></html>";
+  response += "</div></body></html> ";
   server.sendContent(response);
   return ;
 }
 
 bool loadFromSPIFFS(String path) {
-  String dataType = "text/plain";
-  File dataFile = LittleFS.open(path.c_str(), "r");
-  if (!dataFile) return false;
-  if (server.streamFile(dataFile, dataType) != dataFile.size()) {
-    Serial.println(F("Sent less data than expected"));
+  // Path est du type server.uri(), donc commence par /
+  // Les fichier de trace commence tous par l'année /2xxx et font l'objet d'un traitement particuliers.
+  // Un autre fichier peut exister errorlog.txt qui lui sera directement téléchargé.
+  // Les autre demande sont a tous les coup des "notFound"
+  // Les autres (fichiers log erreur sont simplement directement téléchargés.
+  if (path.substring(0, 2) == "/e" ) {
+    File dataFile = LittleFS.open(path.c_str(), "r");
+    if (!dataFile) return false;
+    server.streamFile(dataFile, "text/plain") ;
+    dataFile.close();
+    return true;
+  } else if (path.substring(0, 2) != "/2" ) {
+    return false;
+  } else {
+
+    // download du fichier "path". On va générer un ficheer .csv ou .gpx suivant les option,
+    // a partir du log binaire
+    // structure servant à stocker en binaire une ligne (un point) du log de trace
+    trackLigne_t trackLigne;
+    //   /yyyy-mm-dd
+    //   01234678901
+    // dateDuFichier va servir à construire le champ date/heure du fichier GPX
+    String dateDuFichier = path.substring(1, 11); // on oublit le / du debut de l'uri yyyy-mm-dd
+    // Serial.print("Date | ");Serial.print(dateDuFichier);Serial.println(" | ");
+    // Si on veut charger le fichier trace en cours, le fermer
+    //Serial.printf("; % s; % s; \n"  , traceFileName, dateDuFichier.c_str());
+    String ss = path.substring(1);
+    if (strcmp(traceFileName, ss.c_str()) == 0) {
+      Serial.println("Fermeture fichier trace en cours");
+      traceFile.close();
+      traceFileOpened = false;
+    }
+
+    File dataFile = LittleFS.open(path.c_str(), "r");
+    if (!dataFile) return false;
+    Serial.print (F("download fichier ")); Serial.println(path);
+    server.chunkedResponseModeStart(200, "text/plain");
+    // creer le header
+    if (strcmp(preferences.formatTrace, "csv") == 0) {
+      String logMessage;
+      logMessage = "Latitude, Longitude";
+      if (preferences.logHeure) logMessage += ", Heure";
+      if (preferences.logVitesse) logMessage += ", Vitesse";
+      if (preferences.logAltitude) logMessage += ", Altitude";
+      logMessage += "\n";
+      server.sendContent(logMessage);
+    }
+    else {
+      server.sendContent_P(headerGPX);
+    }
+    char buf[1024];
+    int deb ;
+    deb = 0;
+    while (dataFile.available()) {
+      dataFile.read((uint8_t *)&trackLigne, sizeof(trackLigne));
+      if (strcmp(preferences.formatTrace, "csv") == 0) { //generation CSV
+        //  -90.00000,-180.00000,12:30:31,1000.00,99999.99
+        //  12345678901234567890123456789012345678901234567890
+        //  Soit un total de 46 + 2 (cr/lf) + 1 = 49 caractères par point CSV max
+        if (sizeof(buf) - deb < 51 ) {
+          server.sendContent((const char*)buf, deb);
+          deb = 0;
+          buf[0] = 0; // chaine vide
+        }
+        deb += sprintf(&buf[deb], " % .6f, % .6f", trackLigne.lat, trackLigne.lng);   //
+        if (preferences.logHeure) deb += sprintf(&buf[deb], ", % 02u: % 02u: % 02u. % 02u", trackLigne.hour, trackLigne.minute, trackLigne.second, trackLigne.centisecond);
+        if (preferences.logVitesse) deb += sprintf(&buf[deb], ", % .2f", trackLigne.speed);
+        if (preferences.logAltitude) deb += sprintf(&buf[deb], ", % .2f", trackLigne.altitude);
+        deb += sprintf(&buf[deb], "\r\n");
+      }
+      else { // generation GPX
+        // <trkpt lat=" - 90.20169" lon=" - 180.67096"><ele>99999.40</ele><time>2002-02-10T16:56:22.00Z</time></trkpt>
+        // 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
+        // 103 + 2(cr/lf) + 1     106 caractères max pour une entrée
+        if (sizeof(buf) - deb < 108 ) {
+          server.sendContent((const char*)buf, deb);
+          deb = 0;
+          buf[0] = 0;
+        }
+        // speed n'existe pas en GPX 1.1: géré par les boutons de sélection du format dans les preferences.
+        //    <time> + ou - obligatoire pour OpenStreetMap
+        deb += sprintf(&buf[deb], "<trkpt lat=\"%.6f\" lon=\"%.6f\">", trackLigne.lat, trackLigne.lng);
+        if (preferences.logAltitude) deb += sprintf(&buf[deb], "<ele>%.2f</ele>", trackLigne.altitude);
+        //                         +++++++++++++++++++++   attention ecriture des centiseconde ??
+        //<time>2002-02-10T21:01:29.250Z</time> Conforms to ISO 8601 specification for date/time representation.
+        if (preferences.logHeure) {
+          // On a que l'heure dans le fichier binaire . YYYY/MM/DD sont connus par le nom du fichier 2021-03-03_16-56
+          deb += sprintf(&buf[deb], "<time>");
+          dateDuFichier.toCharArray(&buf[deb], 11);  // 10 carac + le null
+          deb += 10;
+          deb += sprintf(&buf[deb], "%T%02u:%02u:%02u.%02uZ</time>",
+                         trackLigne.hour, trackLigne.minute, trackLigne.second, trackLigne.centisecond);
+        }
+        deb += sprintf(&buf[deb], "</trkpt>\r\n");
+      }
+    }
+    // fin fichier. vider le bufer et fermer le GPX
+    if (strcmp(preferences.formatTrace, "gpx") == 0) {
+      // Bien terminer le fichier GPX
+      // </trkseg></trk></gpx>
+      // 12345678901234567890123
+      //   21 + 1 + 2 (cr/lf) = 24 carca
+      if (sizeof(buf) - deb < 26 ) {
+        server.sendContent((const char*)buf, deb);
+        deb = 0;
+        buf[0] = 0;
+      }
+      deb += sprintf(&buf[deb], "</trkseg></trk></gpx>");
+    }
+    server.sendContent((const char*)buf, deb);
+    server.chunkedResponseFinalize();
+    dataFile.close();
+    return true;
   }
-  dataFile.close();
-  return true;
 }
+
 void handleDelete() {
   String result = "Le fichier " + server.arg("delete");
-  if (LittleFS.remove(server.arg("delete")))
+  if (LittleFS.remove(server.arg("delete"))) {
     result += " a &eacute;t&eacute; effac&eacute;";
+    fileSystemFull = false;
+    messAlarm = ""; // on va faire de la place dans la mémoire (?) .Enlever message alarme
+  }
   else
     result += " n'existe pas.";
   Serial.print(F("delete de ")); Serial.println(server.arg("delete"));
@@ -421,14 +346,13 @@ void handleDelete() {
 }
 
 void handleFormatage() {
-  Serial.print(F("Formatage:"));
   bool formatted = LittleFS.format();
   if (formatted) {
-    Serial.println(F("OK"));
     LittleFS.begin();
+    traceFileName[0] = 0; // forcer la recréation éventuelle du trace file
+    traceFileOpened = false;
     gestionSpiff("Formatage r&eacute;ussi");
   } else {
-    Serial.println(F("Erreur"));
     gestionSpiff("Erreur de formatage");
   }
 }
@@ -444,23 +368,18 @@ void handleGestionSpiff() {
 
 void handleNotFound() {
   if (loadFromSPIFFS(server.uri())) return;  // permet de telecharger un fichier par appel direct
-  handleCockpit_(); //  sinon: acces au portail général
+  handleCockpit(); //  sinon: acces au portail général
 }
 
 // Panic !: on ecrase la conf avec la conf par defaut
 void checkFactoryReset() {
-  Serial.println(F("Entrée checkFactoryReset"));
   pinMode(pinFactoryReset, INPUT_PULLUP);
   if (digitalRead(pinFactoryReset) == HIGH ) return;
-  Serial.println(F("Factory reset !!"));
   savePreferences();
-
 }
 
 void readPreferences() {
   EEPROM.get(0, preferences);
-  Serial.print("factoryPrefs.signature: "); Serial.println(factoryPrefs.signature);
-  Serial.print("preferences.signature: "); Serial.println(preferences.signature);
   if ( strcmp(factoryPrefs.signature, preferences.signature) != 0) {
     Serial.print(F(" Ecriture configuration usine"));
     preferences = factoryPrefs;
@@ -475,14 +394,18 @@ void savePreferences() {
 
 void listPreferences() {
   Serial.print(F("\npassword: ")); Serial.println(preferences.password);
-  Serial.print(F("local_ip: ")); Serial.println(preferences.local_ip);
-  Serial.print(F("gateway: ")); Serial.println(preferences.gateway);
-  Serial.print(F("subnet: ")); Serial.println(preferences.subnet);
+  // Serial.print(F("local_ip: ")); Serial.println(preferences.local_ip);
+  // Serial.print(F("gateway: ")); Serial.println(preferences.gateway);
+  // Serial.print(F("subnet: ")); Serial.println(preferences.subnet);
+  Serial.print(F("logNo: ")); Serial.println(preferences.logNo ? "TRUE" : "FALSE");
   Serial.print(F("logAfter: ")); Serial.println(preferences.logAfter);
-  Serial.print(F("logOn: ")); Serial.println(preferences.logOn ? "TRUE" : "FALSE");
+  Serial.print(F("formatTrace: ")); Serial.println(preferences.formatTrace);
   Serial.print(F("logVitesse: ")); Serial.println(preferences.logVitesse ? "TRUE" : "FALSE");
   Serial.print(F("logAltitude: ")); Serial.println(preferences.logAltitude ? "TRUE" : "FALSE");
   Serial.print(F("logHeure: ")); Serial.println(preferences.logHeure ? "TRUE" : "FALSE");
+  Serial.print(F("baud: ")); Serial.println(preferences.baud);
+  Serial.print(F("hz: ")); Serial.println(preferences.hz);
+
 }
 void handleOptionLogProcess() {
   Serial.println(F("handleOptionLogProcess"));
@@ -490,35 +413,54 @@ void handleOptionLogProcess() {
     String   arg (const char *name)  String  arg (int i) String  argName (int i) int   args ()
     bool  hasArg (const char *name)
   */
-  preferences.logAfter =  (int)std::strtol(server.arg("logAfter").c_str(), nullptr, 10);;   // en mètre. 0= debut du log dès le fix, sinon après déplacement initial de n mètre
-  preferences.logOn = server.hasArg("logOn");
+
+  preferences.logAfter =  (int)std::strtol(server.arg("logAfter").c_str(), nullptr, 10);;   // n en mètre. Log trace après un déplacemnt de n mètre.  Si <0: log pleine vitesse !!!! pour test
+  server.arg("formatTrace").toCharArray(preferences.formatTrace, 4);
+  preferences.logNo = server.hasArg("logNo");
   preferences.logVitesse = server.hasArg("logVitesse");
   preferences.logAltitude = server.hasArg("logAltitude");
   preferences.logHeure = server.hasArg("logHeure");
   savePreferences();
-  // effacer le fichier log en cours (si il existe ..)
-  //le prochain sera recree avec le bon format
-  Serial.print("On efface le fichier courant:"); Serial.println(logFileName);
-  LittleFS.remove(logFileName);
-  logFileName[0] ; // nom vide. On va le recreer
+  listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
   displayOptionsSysteme("Préferences mise à jour.");
 }
+
+void handleOptionGPSProcess() {
+  bool restartGps = false;
+  int bds = (int)std::strtol(server.arg("baud").c_str(), nullptr, 10);
+  if (bds != preferences.baud) {
+    restartGps = true;
+    preferences.baud = bds;
+  }
+  int hz =  (int)std::strtol(server.arg("hz").c_str(), nullptr, 10);
+  // pour 9600bds, limited le rafrachissement à 5hz sinon boom...
+  if (bds == 9600 && hz > 5) hz = 5;
+  if (hz != preferences.hz ) {
+    restartGps = true;
+    preferences.hz = hz;
+  }
+  savePreferences();
+  listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
+  displayOptionsSysteme("Préferences mise à jour.");
+  if (restartGps) fs_initGPS();
+}
+
 void handleOptionWifiProcess() {
   Serial.println(F("handleOptionWifiProcess"));
   // validation mini des adresses IP
   String message;
-  IPAddress ipTest;
-  bool errIp = (!ipTest.fromString(server.arg("local_ip"))) || (!ipTest.fromString(server.arg("gateway"))) || (!ipTest.fromString(server.arg("subnet")));
-  if (errIp) {
-    message = "Erreurs dans les adresses IP";
-  }
-  else {
-    server.arg("password").toCharArray(preferences.password, 9); //   forcer à 8  ??     init ""  ????????????
-    server.arg("local_ip").toCharArray(preferences.local_ip, 16); // La taille est limité a 15 par le HTML
-    server.arg("gateway").toCharArray(preferences.gateway, 16);
-    server.arg("subnet").toCharArray(preferences.subnet, 16);
-    message = "Préferences mise à jour. La balise redémare";
-  }
+  //  IPAddress ipTest;
+  // bool errIp = (!ipTest.fromString(server.arg("local_ip"))) || (!ipTest.fromString(server.arg("gateway"))) || (!ipTest.fromString(server.arg("subnet")));
+  // if (errIp) {
+  //    message = "Erreurs dans les adresses IP";
+  //  }
+  //  else {
+  server.arg("password").toCharArray(preferences.password, 9); //   forcer à 8  ??     init ""  ????????????
+  //   server.arg("local_ip").toCharArray(preferences.local_ip, 16); // La taille est limité a 15 par le HTML
+  //   server.arg("gateway").toCharArray(preferences.gateway, 16);
+  //    server.arg("subnet").toCharArray(preferences.subnet, 16);
+  message = "Préferences mise à jour. La balise redémare";
+  //}
   savePreferences();
   displayOptionsSysteme(message);
   delay(1500);
@@ -528,14 +470,19 @@ void handleOptionWifiProcess() {
 void handleOptionsPreferences() {
   server.sendContent_P(pageOption);
   String message = "<script>gel('password').value='" + String(preferences.password) + "'";
-  message += ";gel('local_ip').value='" + String(preferences.local_ip) + "'";
-  message += ";gel('gateway').value='" + String(preferences.gateway) + "'";
-  message += ";gel('subnet').value='" + String(preferences.subnet) + "'";
+  //  message += ";gel('local_ip').value='" + String(preferences.local_ip) + "'";
+  //  message += ";gel('gateway').value='" + String(preferences.gateway) + "'";
+  //  message += ";gel('subnet').value='" + String(preferences.subnet) + "'";
   message += ";gel('logAfter').value=" + String(preferences.logAfter);
-  message += ";gel('logOn').checked=" + String((preferences.logOn ? "true" : "false"));
-  message += ";gel('logVitesse').checked=" + String( (preferences.logVitesse ? "true" : "false"));
-  message += ";gel('logAltitude').checked=" + String( (preferences.logAltitude ? "true" : "false"));
+  message += ";gel('logNo').checked=" + String((preferences.logNo ? "true" : "false"));
+  if (strcmp(preferences.formatTrace, "gpx") == 0) message += ";gel('logGPX').checked=true";
+  else message += ";gel('logCSV').checked=true";
+  message += ";gel('logVitesse').checked=" + String((preferences.logVitesse ? "true" : "false"));
+  message += ";gel('logAltitude').checked=" + String((preferences.logAltitude ? "true" : "false"));
   message += ";gel('logHeure').checked=" + String((preferences.logHeure ? "true" : "false" ));
+  message += ";gel('B" + String(preferences.baud) + "').selected='true'";
+  message += ";gel('F" + String(preferences.hz) + "').selected ='true'";
+  //  document.getElementById("orange").selected = "true";
   message += ";</script>";
   server.sendContent(message);
   server.chunkedResponseFinalize();
@@ -547,6 +494,7 @@ void handleResetUsine() {
   handleReset();
 }
 void handleReset() {
+  traceFile.close();
   LittleFS.end();
   sendChunkDebut ( false );  // debut HTML style, sans  topMenu
   server.sendContent_P(byeBey);
@@ -556,8 +504,8 @@ void handleReset() {
 }
 
 void fs_initServerOn( ) {
-  server.on("/", handleCockpit_);
-  server.on("/cockpit", handleCockpit_);
+  server.on("/", handleCockpit);
+  server.on("/cockpit", handleCockpit);
   server.on("/spiff", handleGestionSpiff);
   server.on("/delete_" , HTTP_POST, handleDelete);
   server.on("/formatage_", HTTP_GET, handleFormatage);  // danger mais un POST est diff a faire !!
@@ -565,6 +513,7 @@ void fs_initServerOn( ) {
   server.on("/optionsSysteme", handleOptionsSysteme);
   server.on("/optionLogProcess", handleOptionLogProcess);
   server.on("/optionWiFiProcess", handleOptionWifiProcess);
+  server.on("/optionGPSProcess", handleOptionGPSProcess);
   server.on("/resetUsine", handleResetUsine);
   server.on("/reset", handleReset);
   server.onNotFound(handleNotFound);
@@ -604,6 +553,7 @@ void  fs_initServerOnOTA(ESP8266WebServer &server) {
     if (upload.status == UPLOAD_FILE_START) {
       Serial.setDebugOutput(true);
       //WiFiUDP::stopAll(); // ?????????????????????????++++++++++++++++++++  FS
+      traceFile.close();
       LittleFS.end();
       Serial.printf("Update avec: %s\n", upload.filename.c_str());
       uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
