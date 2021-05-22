@@ -1,19 +1,21 @@
 
-# BaliseDGAC_GPS_Logger
+# BaliseDGAC_GPS_Logger V3
 Version d'une balise de signalisation style DGAC pour drone et aéromodélisme avec enregistrement des traces.
 [Voir ici les principales modifications par rapport à la version 1](#principales-modifications-par-rapport-à-la-version-1)
 # Balise avec enregistrement de traces
-Cette version de la balise DGAC de signalement électronique à distance pour drone et aéromodélisme est basée sur la version **GPS_Tracker_ESP8266V1_WEB** de "dev-fred" disponible à https://github.com/dev-fred/GPS_Tracker_ESP8266 .
+Le coeur du logiciel qui transmet la trame spécifique d'identification à distance pour drone et aéromodélisme est basé sur la version **GPS_Tracker_ESP8266V1_WEB** de "dev-fred" disponible à https://github.com/dev-fred/GPS_Tracker_ESP8266 ainsi que sur les travaux de "Tr@nquille" disponible à https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html. Les parties interface WEB et enregistrement de traces ont été rajoutées.
+
+Le code est compatible ESP8266 et ESP32. Voir quelques remarques ci après; XXXXXXXXXXXXXXXXXXX
 
 La réalisation a été faite avec un ESP01 (ESP8266) et un GPS QUECTEL L80 ce qui donne une réalisation très compacte, mais bien d'autres  possibilités existent avec par exemple un ESP8266 D1, un GSP BN220 etc...
 La consommation de cette configuration varie de 80 à 90mA.
 
 ## Principales caractéristiques:
 - **interface Web**
-- Ajout d'une fonction d'**enregistrement des traces** format **CSV/GPX** dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs / conditions d'enregistrement). 
-- Modification de l'**identificateur de la balise**: l'adresse MAC est utilisée comme numéro de série.
-- Ajout d'une fonction de mise à jour du logiciel à travers la liaison WiFI (**OTA** Over The Air)
-- Ajout d'un **portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l'interface utilisateur, sans besoin de donner une adresse IP
+- Fonction d'**enregistrement des traces** format **CSV/GPX** dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs / conditions d'enregistrement). 
+- **identificateur de la balise**: l'adresse MAC est utilisée comme numéro de série.
+- Fonction de mise à jour du logiciel à travers la liaison WiFI (**OTA** Over The Air)
+- **portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l'interface utilisateur, sans besoin de donner une adresse IP
 - Interface utilisateur pour la **gestion des préférences**, la gestion "système" etc …
 
 |   ![](/img/cockpit_LI.jpg) | ![](/img/traces.png)  |
@@ -70,6 +72,11 @@ Si le GPS a une configuration connue et satisfaisante lors d'un cold start, il s
    à des calculs de longueur de segment parcourus faux et donc à des
    points de trace faux. [Voir TinyGPSPlus issue#87](https://github.com/mikalhart/TinyGPSPlus/issues/87)
 
+## Principales modifications par rapport à la version 2
+
+- sur option, coupure du point accès Wifi (interface WEB) pendant l'utilisation pour limiter la consommation.
+- code compatible ESP32 / ESP8266 (choix d'une option)
+
 ## Principales modifications par rapport à la version 1
 
  - téléchargement de traces en format CSV et/ou GPX.
@@ -92,7 +99,5 @@ En phase de tests, il est possible de choisir une longueur de segment maximum n�
 #### Idées de développements futurs. 
 
 - nettoyage du code. Limiter l'utilisation de "string".
-- revoir la partie condition de génération de la trame d'identification.
-- Arrêt du webserver /AP après N minutes ?? pour ne pas interférer avec le 2.4G de la télécommande ??
-- portage sur ESP32 quand la librairie littleFS sera disponible.
+- mise à jour quand la version "officielle" de ystème de gestion de fichier sera disponible sur ESP32
 - ???
