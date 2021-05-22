@@ -1,7 +1,7 @@
 
 # BaliseDGAC_GPS_Logger V3
 Version d'une balise de signalisation style DGAC pour drone et aéromodélisme avec enregistrement des traces.
-[Voir ici les principales modifications par rapport à la version 1](#principales-modifications-par-rapport-à-la-version-1)
+[Voir ici les principales modifications par rapport à la version 2](#principales-modifications-par-rapport-à-la-version-2)
 # Balise avec enregistrement de traces
 Le coeur du logiciel qui transmet la trame spécifique d'identification à distance pour drone et aéromodélisme est basé sur la version **GPS_Tracker_ESP8266V1_WEB** de "dev-fred" disponible à https://github.com/dev-fred/GPS_Tracker_ESP8266 ainsi que sur les travaux de "Tr@nquille" disponible à https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html. Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
@@ -11,7 +11,8 @@ La réalisation a été faite avec un ESP01 (ESP8266) et un GPS QUECTEL L80 ce q
 La consommation de cette configuration varie de 80 à 90mA.
 
 ## Principales caractéristiques:
-- **interface Web**
+- **interface Web** accessible sur un point d'accés (AP) crée par la balise. Gestion et controle du bon fonctionnement de la balise.
+- Possibilité de **coupure du Point d'Accés** pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
 - Fonction d'**enregistrement des traces** format **CSV/GPX** dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs / conditions d'enregistrement). 
 - **identificateur de la balise**: l'adresse MAC est utilisée comme numéro de série.
 - Fonction de mise à jour du logiciel à travers la liaison WiFI (**OTA** Over The Air)
@@ -29,7 +30,7 @@ ou les transformer en fichier GPX, KML,... avec par exemple [GPSVisualizer](http
 
 L'enregistrement des points de trace ne se fait que lorsque la balise est en mouvement et est totalement décorrélé de l'émission des trames d'identification.
 La page "**Préférences**" permet de choisir la distance minimale qui provoque l'enregistrement, dès que le fix GPS est fait.
-La vitesse de transmission du GPS et sa fréquence de rafraichissement sont aussi sélectionnées sur cette page (38400Bds et 10Hz conseillés)
+La vitesse de transmission du GPS et sa fréquence de rafraichissement sont aussi sélectionnées sur cette page (19200Bds et 10Hz conseillés)
 
 …
 
@@ -49,13 +50,21 @@ Pour un modèle volant au dessus de 50km/h (14 m/s)  il est illusoire de vouloir
 Si besoin est, pour quelques dizaines de centimes il est possible d'augmenter la mémoire d'un ESP8266  jusqu'à 16mb ;-)
 
  ## Compilation
-- Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS, génération d'une page [statistiques](#génération-de-statistiques) etc ...)
+ 
+ Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS, génération d'une page [statistiques](#génération-de-statistiques) etc ...)
+ 
+ ###ESP8266
+- pour une réalisation à base de ESP01 il est obligatoire d'utiliser les pin 0 et 2 pour le GPS (voir commentaire)
 - Le fichier compilé avec option OTA occupe environ 373Kb et si on veut maximiser la place laissée au système de gestion de fichiers on peut choisir dans l'IDE Arduino, pour une module ESP01 une map mémoire FS 256Kb/OTA 375kb
 Avec les options OTA et STA (statistiques) le fichier compilé occupe environ 378Kb et il faut choisir une map mémoire FS 192kb/OTA 406kb
 Outil/Type de Carte "Generic ESP8266 Module"   Flash Size 1MB(FS:256KB OTA ¨375KB) ce qui permet d'enregistrer plusieurs heures de vols.
 Sans OTA on peut choisir un filesystem de 512KB
 - Pour un premier chargement du programme il est conseillé d'utiliser l'option Outils/Erase Flash: "All Flash Contents"
-- Les librairies LittleFS, DNSServer, EEPROM sont installées en même temps que le SDK ESP8266.
+- Les librairies LittleFS, DNSServer, EEPROM sont installées en même temps que le SDK ESP8266. 
+
+###ESP32
+- la version actuelle (mai 2021) du SDK ESP32 1.0.6 ne contient pas de librairie LittleFS. Cela sera chose faite à partir de la version 2.0.0. En attendant il faut donc installer explicitement la librairie LITTLEFS à partir de https://github.com/lorol/LITTLEFS. Cette opération ne sera pas nécessaire lorsque le SDK ESP32 2.0.0 sera disponible.
+- 
 ## Modules GPS
 Le logiciel a été testé avec un GPS QUECTEL L80 dont la gestion est principalement assurée dans le fichier fs_GPS.cpp. Des GPS qui utilisent les commandes style $PMTK251, $PMTK220,  $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, ...) peuvent être utilisés directement.  Les modules Beitian demandent sûrement une adaptation plus complexe.
 Si le GPS a une configuration connue et satisfaisante lors d'un cold start, il suffit de valider les 2 premières lignes dans la fonction  fs_initGPS(). On perdra alors la possibilité de choisir dynamiquement la vitesse et la fréquence de rafraichissement.
