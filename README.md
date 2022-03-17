@@ -80,9 +80,11 @@ Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichi
 Cest le mode par défaut de la balise lors de sa mise sous tension. Les trames d’identification sont émises.  Une interface Web permet son contrôle après connexion au point d’accès  crée par la balise (système de portail captif)
 
 ## **Fenêtre « Cockpit »**
- <img src="/img/cockpit.jpg" width="400">
+
+ <img src="/img/cockpit.jpg"  align="left" width="400">
 Elle affiche l’état général de la balise et permet de contrôler son bon fonctionnement.  
-La vitesse maximale ainsi que la hauteur maximale atteinte depuis la mise sous tension  sont aussi affichées.
+La vitesse maximale ainsi que la hauteur maximale atteinte depuis la mise sous tension sont aussi affichées ainsi que le nombre de trame d'identification émises et le nombre de points GPS enregistrés depuis le dernier démarage de la balise.
+<br clear="both">  
 
 ## **Fenêtre « Trace »** 
 
@@ -97,9 +99,10 @@ Un fichier peut être téléchargé localement pour analyse fine.
 <a name="warning1">**Attention :** dans certains cas (sous Android ?),  le navigateur ouvert automatiquement lors de la connexion au portail captif ne permet pas de faire des téléchargements de fichiers. Il faut alors utiliser explicitement le navigateur standard. Ceci ne se produit pas sur un PC Windows.
 
 ## **Fenêtre « Préférences »**
-   <img src="/img/preferences.jpg" width="400"> 
-  
+   <img src="/img/preferences.jpg" align=left width="400"> 
 Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraichissement), la gestion du point d’accès Wi-Fi.  
+  <br clear="both">  
+  
 ### **Format de la trace GPS**
 On peut choisir d'enregistrer ou non une trace GPS.
 La création d’une trace ne commence qu’après l’obtention d’un fix GPS et l'enregistrement d'un nouveau point de trace est déclenché
@@ -143,7 +146,8 @@ Redémarre la balise
 Réinitialise le système de gestion de fichiers 
 ### **Bouton « Maj OTA »**
 Permet une mise à jour très aisée du logiciel par la liaison Wi-Fi (au détriment de la mémoire réservée pour les fichiers traces, ce qui peut éventuellement être un problème avec  un module style ESP8266 avec peu de mémoire …)   
-l suffit de sélectionner le fichier résultat de compilation qui est  en général dans C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
+l suffit de sélectionner le fichier résultat de compilation qui est  en général dans  
+  C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
 (Sélectionner le répertoire arduino\_build\_... qui a la date de modification la plus récente)
 
 
@@ -151,9 +155,9 @@ l suffit de sélectionner le fichier résultat de compilation qui est  en géné
 |   <img src="/img/recepteur_1.png" width="400"> | <img src="/img/detail_balise.jpg" width="400">  |
 | ------------ | ------------ |
 
-Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.
-Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises. 
-Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise sous tension en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
+  Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises.   
+  Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise sous tension en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
 
  <a name="scenario">
    
