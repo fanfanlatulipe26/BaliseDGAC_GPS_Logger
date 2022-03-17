@@ -3,11 +3,10 @@ Version d'une balise de signalisation style DGAC pour  signalisation de drones e
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
-![](#/img/bal1.jpg)
 
 |   <img src="/img/bal1.jpg" width="400"> | <img src="/img/bal2.jpg" width="400">  |
 | ------------ | ------------ |
-Balise réalitée avec un module ESP32-C3 T-01C3. Poids: 11g
+Balise réalisée avec un module ESP32-C3 T-01C3. Poids: 11g
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
@@ -81,10 +80,15 @@ Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichi
 Cest le mode par défaut de la balise lors de sa mise sous tension. Les trames d’identification sont émises.  Une interface Web permet son contrôle après connexion au point d’accès  crée par la balise (système de portail captif)
 
 ## **Fenêtre « Cockpit »**
+ <img src="/img/cockpit.jpg" width="400">
 Elle affiche l’état général de la balise et permet de contrôler son bon fonctionnement.  
 La vitesse maximale ainsi que la hauteur maximale atteinte depuis la mise sous tension  sont aussi affichées.
 
 ## **Fenêtre « Trace »** 
+
+|   <img src="/img/trace_2.jpg" width="400"> | <img src="/img/detail_trace.png" width="400">  |
+| ------------ | ------------ |
+
 La fenêtre « Trace » permet la gestion des traces GPS enregistrées.   
 Des couleurs mettent en évidence  le plus ancien, le plus gros et le plus récent fichiers.  
 Un click sur le nom d’un fichier ouvre une fenêtre donnant les caractéristiques principales de la trace (Nombre de points, heure de début/fin, vitesse maximum, hauteur maximum …)   
@@ -93,7 +97,9 @@ Un fichier peut être téléchargé localement pour analyse fine.
 <a name="warning1">**Attention :** dans certains cas (sous Android ?),  le navigateur ouvert automatiquement lors de la connexion au portail captif ne permet pas de faire des téléchargements de fichiers. Il faut alors utiliser explicitement le navigateur standard. Ceci ne se produit pas sur un PC Windows.
 
 ## **Fenêtre « Préférences »**
-Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraichissement), la gestion du point d’accès Wi-Fi
+   <img src="/img/preferences.jpg" width="400"> 
+  
+Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraichissement), la gestion du point d’accès Wi-Fi.  
 ### **Format de la trace GPS**
 On peut choisir d'enregistrer ou non une trace GPS.
 La création d’une trace ne commence qu’après l’obtention d’un fix GPS et l'enregistrement d'un nouveau point de trace est déclenché
@@ -142,6 +148,8 @@ l suffit de sélectionner le fichier résultat de compilation qui est  en géné
 
 
 # Mode Récepteur
+|   <img src="/img/recepteur_1.png" width="400"> | <img src="/img/detail_balise.jpg" width="400">  |
+| ------------ | ------------ |
 
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.
 Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises. 
