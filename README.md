@@ -1,112 +1,167 @@
+**Recepteur ??**
 
-# BaliseDGAC_GPS_Logger V3
-Version d'une balise de signalisation style DGAC pour drone et aéromodélisme avec enregistrement des traces.
-[Voir ici les principales modifications par rapport à la version 2](#principales-modifications-par-rapport-à-la-version-2)
-# Balise avec enregistrement de traces
-Le coeur du logiciel qui transmet la trame spécifique d'identification à distance pour drone et aéromodélisme est basé sur la version **GPS_Tracker_ESP8266V1_WEB** de "dev-fred" disponible à https://github.com/dev-fred/GPS_Tracker_ESP8266 ainsi que sur les travaux de "Tr@nquille" disponible à https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html. Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
-Le code est compatible ESP8266 et ESP32. Voir quelques remarques ci après; XXXXXXXXXXXXXXXXXXX
+# **BaliseDGAC\_GPS\_Logger V3  Emetteur/Récepteur**
+Version d'une balise de signalisation style DGAC pour  signalisation de drones et aéromodéles avec possibilité d'enregistrement des traces GPS. 
+La balise a deux modes de fonctionnement:
+- Mode émetteur
+- Mode récepteur pour contrôler le fonctionnement des balises du voisinage
 
-La réalisation a été faite avec un ESP01 (ESP8266) et un GPS QUECTEL L80 ce qui donne une réalisation très compacte, mais bien d'autres  possibilités existent avec par exemple un ESP8266 D1, un GSP BN220 etc...
-La consommation de cette configuration varie de 80 à 90mA.
+## **Crédit:**
+Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)
+Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
-## Principales caractéristiques:
-- **interface Web** accessible sur un point d'accés (AP) crée par la balise. Gestion et controle du bon fonctionnement de la balise.
-- Possibilité de **coupure du Point d'Accés** pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
-- Fonction d'**enregistrement des traces** format **CSV/GPX** dans le système de fichiers de l'ESP avec interface Web de gestion (effacer / télécharger / choix des champs / conditions d'enregistrement). 
-- **identificateur de la balise**: l'adresse MAC est utilisée comme numéro de série.
-- Fonction de mise à jour du logiciel à travers la liaison WiFI (**OTA** Over The Air)
-- **portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l'interface utilisateur, sans besoin de donner une adresse IP
-- Interface utilisateur pour la **gestion des préférences**, la gestion "système" etc …
 
-|   ![](/img/cockpit_LI.jpg) | ![](/img/traces.png)  |
-| ------------ | ------------ |
+## **Principales caractéristiques:**
+- Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'arrêté du 27 décembre 2019(loi drone …)
+- Mode émetteur ou récepteur
+- Interface Web accessible sur un point d'accès (AP) crée par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
+- Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse
+- Possibilité de coupure du Point d’Accès pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
+- Fonction d’enregistrement des traces GPS dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
+- Fonction de mise à jour du logiciel à travers la liaison Wi-Fi (OTA Over The Air)
+- code compatible ESP32/ ESP32-C3 / ESP8266 
 
-Si il y a plus de 4 fichiers de traces, le logiciel efface automatiquement les fichiers les plus anciens  quand la place manque dans la mémoire. Le fichier le plus ancien, le plus récent et le plus volumineux sont mis en valeur.  
-La page "**Péférences**" permet de choisir le format de téléchargement des traces **CSV** et/ou **GPX** et la même trace peut être téléchargée dans les 2 formats. Les traces CSV sont plus faciles à analyser dans Excel par exemple, alors qu'un site comme [GEO JAVAWA](https://www.geo.javawa.nl/trackanalyse/index.php?lang=en) permet une analyse fine, segment par segment de traces GPX.
-On peut importer ces fichiers CSV dans Google Maps pour visualisation: 
-     Google Maps/Menu/Vos adresses/Cartes/Créer une carte/Importer  
-ou les transformer en fichier GPX, KML,... avec par exemple [GPSVisualizer](https://www.gpsvisualizer.com/)
+Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemples des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …[Exemple ici](#scenario)
 
-L'enregistrement des points de trace ne se fait que lorsque la balise est en mouvement et est totalement décorrélé de l'émission des trames d'identification.
-La page "**Préférences**" permet de choisir la distance minimale qui provoque l'enregistrement, dès que le fix GPS est fait.
-La vitesse de transmission du GPS et sa fréquence de rafraichissement sont aussi sélectionnées sur cette page (19200Bds et 10Hz conseillés)
+## **Matériel supporté**
+**Microcontrôleurs supportés:**
+- ESP8266 (par exemple module ESP01)
+- ESP32
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3)
 
-…
+**Modules GPS supportés:**
+- Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
+- Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
-![](/img/preferences.png)
- 
-Pour l'aspect WiFi, par défaut le réseau est ouvert (pas de mot de passe) et l'adresse IP est 192.168.4.1  
-Le portail captif permet une connexion aisée, sans le besoin de donner l'adresse IP (Fonctionne très bien sous Windows avec Firefox, Chrome, Edge. Est un peu plus capricieux sous Android où il suffit de donner une adresse pouvant être valide comme xx.fr !!)  
-Le bouton ***Reset*** redémarre la balise et ***Reset Usine*** restaure les préférences à leurs valeurs par défaut.  
-***Format*** réinitialise le système de gestion de fichiers.  
-***OTA*** permet une mise à jour du logiciel par la liaison WiFi.  
-![](/img/OTA.png)
-## Gestion de la trace
-Chaque point de trace occupe 20 octets en mémoire, ce qui permet d'enregistrer environ 12000 points dans une partition filesystem de 256Ko. Avec un modèle volant à 20m/s (soit environ 70km/h) et en choisissant d'enregistrer 1 point pour chaque déplacement de 10m on pourra donc enregistrer environ 1h30 de vol. 
-Le GPS met à jour ses mesures au maximum à 10hz soit toutes les 0.1s ce qui donne un enregistrement de 20mn seulement dans les mêmes conditions de vitesse si on choisit d'enregistrer la trace tous les 2m.
-Pour un modèle volant au dessus de 50km/h (14 m/s)  il est illusoire de vouloir enregistrer une trace avec des points distants de 1m .....
+Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions/ brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour un antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.
+Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
 
-Si besoin est, pour quelques dizaines de centimes il est possible d'augmenter la mémoire d'un ESP8266  jusqu'à 16mb ;-)
+## **Message d'identification**
+La balise émet des messages d'identification conforme à l'arrêté du 27 décembre 2019
+Le format de l'identifiant diffusé est le suivant:
+- Un code sur 3 caractères, censé représenter le trigramme constructeur. 
+  Il doit être **obligatoirement** 000 pour une construction amateur "DIY"
+- Un code sur 3 caractères, censé représenter le modèle de la balise 
+- Un code sur 24 caractères, censé représenter le numéro de série de la balise.
 
- ## Compilation
- 
- Avant de compiler il faut choisir quelques options dans le fichier fs_option.h(choix des pins IO pour le GPS, choix d'inclure ou non la mise à jour par OTA, vitesse/gestion GPS, génération d'une page [statistiques](#génération-de-statistiques) etc ...)
- 
- ###ESP8266
-- pour une réalisation à base de ESP01 il est obligatoire d'utiliser les pin 0 et 2 pour le GPS (voir commentaire)
-- Le fichier compilé avec option OTA occupe environ 373Kb et si on veut maximiser la place laissée au système de gestion de fichiers on peut choisir dans l'IDE Arduino, pour une module ESP01 une map mémoire FS 256Kb/OTA 375kb
-Avec les options OTA et STA (statistiques) le fichier compilé occupe environ 378Kb et il faut choisir une map mémoire FS 192kb/OTA 406kb
-Outil/Type de Carte "Generic ESP8266 Module"   Flash Size 1MB(FS:256KB OTA ¨375KB) ce qui permet d'enregistrer plusieurs heures de vols.
-Sans OTA on peut choisir un filesystem de 512KB
-- Pour un premier chargement du programme il est conseillé d'utiliser l'option Outils/Erase Flash: "All Flash Contents"
-- Les librairies LittleFS, DNSServer, EEPROM sont installées en même temps que le SDK ESP8266. 
+Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"
+Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.
+L'interface utilisateur affiche l'identifiant de la balise qui devra être enregistré sur le site AlphaTango.
+Les messages d’identifications sont envoyés dès que la balise est sous-tension, même en l’absence d’un fix GPS.
 
-###ESP32
-- la version actuelle (mai 2021) du SDK ESP32 1.0.6 ne contient pas de librairie LittleFS. Cela sera chose faite à partir de la version 2.0.0. En attendant il faut donc installer explicitement la librairie LITTLEFS à partir de https://github.com/lorol/LITTLEFS. Cette opération ne sera pas nécessaire lorsque le SDK ESP32 2.0.0 sera disponible.
-- 
-## Modules GPS
-Le logiciel a été testé avec un GPS QUECTEL L80 dont la gestion est principalement assurée dans le fichier fs_GPS.cpp. Des GPS qui utilisent les commandes style $PMTK251, $PMTK220,  $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, ...) peuvent être utilisés directement.  Les modules Beitian demandent sûrement une adaptation plus complexe.
-Si le GPS a une configuration connue et satisfaisante lors d'un cold start, il suffit de valider les 2 premières lignes dans la fonction  fs_initGPS(). On perdra alors la possibilité de choisir dynamiquement la vitesse et la fréquence de rafraichissement.
 
-## Problèmes connus
+## **Environnement logiciel. Compilation**
+Les tests ont été faits dans l'environnement IDE Arduino 18.19
+Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2022: ESP32 2.0.2, ESP8266 3.0.2)
+Seule la librairie TinyGPS++ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
 
- - Il peut arriver (rarement) quue les trames d'identification ne soient plus émises, alors que
-   le fix GPS est normal: le programme semble attendre (parfois
-   plusieurs dizaines de secondes) quelque part dans le code des
-   librairies spécifiques de l'ESP.... A approfondir ...
- - La communication entre le GPS et le processeur via SoftwareSerial
-   n'est pas très robuste et parfois des erreurs de transmissions ne
-   sont pas détectées, ce qui donne des points GPS aberrants conduisant
-   à des calculs de longueur de segment parcourus faux et donc à des
-   points de trace faux. [Voir TinyGPSPlus issue#87](https://github.com/mikalhart/TinyGPSPlus/issues/87)
+Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.
 
-## Principales modifications par rapport à la version 2
+Le choix du type de processeur est fait  lors de la compilation en sélectionnant le bon type de carte dans l'IDE Arduino
 
-- sur option, coupure du point accès Wifi (interface WEB) pendant l'utilisation pour limiter la consommation.
-- code compatible ESP32 / ESP8266 (choix d'une option)
+### **Modules GPS**
 
-## Principales modifications par rapport à la version 1
+Choisir dans le fichier fs\_options.h  une des lignes :
 
- - téléchargement de traces en format CSV et/ou GPX.
- - enregistrement de la trace décorrélé de l'émission des trames d'identification.
- - enregistrement des points de traces uniquement dicté par le déplacement de la balise.
- - choix possible de la vitesse de transmission du GPS et de sa fréquence de mise à jour (34500bds, 10hz recommandés).
- - au moins 4 fichiers traces sont gardés en mémoire.
- - option pour générer une page de statistiques pour analyser le comportement du logiciel.
-## Génération de statistiques
-Surtout intéressante dans un phase de développemnt/validation, l'option **fs_STAT** disponible dans le fichier **fs_options.h** permet de générer une page Web supplémentaire et de suivre en temps réel des statistiques sur le fonctionnement de la balise:
- - nombre de trames GPS correctes/incorrectes
- -  nombre de points traces enregistrés
- -  durée / période d'exécution de certaines parties du logiciel.
- -  ...
- 
-En phase de tests, il est possible de choisir une longueur de segment maximum négative à partir de la page de **Préférences**. Cette valeur devient alors en fait la période d'enregistrement de la trace: -200 donnera un point de trace toutes les 200ms.
- Dans tous les cas le fix GPS doit être validé. Ceci permet d'explorer rapidement "sur la table" des choix vitesse / rafraichissement GPS, de voir l'évolution du taux d'erreurs, des temps d’exécution etc ...
+\#define GPS\_quectel //  style Quectel L80  et GPS style base chipset MediaTek MT3339  
+ou  
+\#define GPS\_ublox   // pour Beitian BN-220, BN-180, BN-880 et GPS style base chipset u-blox M8030-KT.  
 
-# Enjoy !  Les commentaires sont les bienvenus.
-#### Idées de développements futurs. 
+Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la partie GPS est compatible avec un BN-180,BN-220, BN-280)
+Les GPS qui utilisent les commandes style $PMTK251, $PMTK220, $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, …) peuvent surement être utilisés.
 
-- nettoyage du code. Limiter l'utilisation de "string".
-- mise à jour quand la version "officielle" de ystème de gestion de fichier sera disponible sur ESP32
-- ???
+### **Utilisation d'un LED**
+Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_option.h)  son clignotement est rythmé par l'émission des trames d'identification. 
+- En absence de fix GPS: clignotement lent, période de 6 seconde.
+- Après un fix GPS: flash très rapide lors de l'envoi d'une trame. (le flash est un peu plus long si la balise est en mode économie d'énergie/mise en sommeil)
+
+# **Mode Emetteur**
+Cest le mode par défaut de la balise lors de sa mise sous tension. Les trames d’identification sont émises.  Une interface Web permet son contrôle après connexion au point d’accès  crée par la balise (système de portail captif)
+
+## **Fenêtre « Cockpit »**
+Elle affiche l’état général de la balise et permet de contrôler son bon fonctionnement.  
+La vitesse maximale ainsi que la hauteur maximale atteinte depuis la mise sous tension  sont aussi affichées.
+
+## **Fenêtre « Trace »** 
+La fenêtre « Trace » permet la gestion des traces GPS enregistrées.   
+Des couleurs mettent en évidence  le plus ancien, le plus gros et le plus récent fichiers.  
+Un click sur le nom d’un fichier ouvre une fenêtre donnant les caractéristiques principales de la trace (Nombre de points, heure de début/fin, vitesse maximum, hauteur maximum …)
+Un fichier peut être téléchargé localement pour analyse fine.
+
+<a name="warning1">**Attention :** dans certains cas (sous Android ?),  le navigateur ouvert automatiquement lors de la connexion au portail captif ne permet pas de faire des téléchargements de fichiers. Il faut alors utiliser explicitement le navigateur standard. Ceci ne se produit pas sur un PC Windows.
+
+## **Fenêtre « Préférences »**
+Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraichissement), la gestion du point d’accès Wi-Fi
+### **Format de la trace GPS**
+La fenêtre « Préférences » permet de configurer le type de traces enregistrées et téléchargées.
+On peut choisir d'enregistrer ou non une trace GPS.
+La création d’une trace ne commence qu’après l’obtention d’un fix GPS et l'enregistrement d'un nouveau point de trace est déclenché
+- Soit par une distance parcourue supérieure à X mètres
+- Soit par un temps écoulé de T millisecondes depuis le dernier point enregistré.  (Choix exclusif) 
+
+Les traces sont enregistrées dans un format neutre et le choix du format GPX/CSV n'est pris en compte que lors du téléchargement: le même fichier peut donc être chargé une foi en format GPX, une foi en format CSV.
+
+Les traces CSV sont plus faciles à analyser dans Excel par exemple, alors qu’un site comme [GEO JAVAWA](https://www.geo.javawa.nl/trackanalyse/index.php?lang=en) permet une analyse fine, segment par segment de traces GPX. On peut importer ces fichiers CSV dans Google Maps pour visualisation: Google Maps/Menu/Vos adresses/Cartes/Créer une carte/Importer ou les transformer en fichier GPX, KML,… avec par exemple [GPSVisualizer](https://www.gpsvisualizer.com/)., etc ...
+
+### **Configuration du GPS**
+La vitesse de transmission du GPS et sa fréquence de rafraichissement sont configurables (9600/19200/38400/57600 bds, 1/3/5/7/10 Hz).
+
+La vitesse de transmission doit être augmentée si une fréquence de rafraichissement  importante est choisie.
+
+Si on veut enregistrer une trace fine, avec des points proches, il est être nécessaire de choisir une fréquence de rafraichissement élevée (par exemple si on utilise la balise pour une recherche de vitesse maximum sur de courtes périodes de temps). Le choix 19200Bds et 10Hz est un bon compromis.
+
+A noter que si on utilise un ESP8266, la liaison série avec le GPS est entièrement émulée par le logiciel avec parfois de problèmes de qualité de transmission pour des vitesses élevées. Avec un ESP32, la liaison est gérée bien plus efficacement par le matériel
+
+### **Gestion du point d'accès Wi-Fi**
+A la mise sous tension, la balise crée un point d'accès Wi-Fi ouvert dont le nom par défaut est BALISE\_adresse-Mac (genre BALISE\_60:55:F9:71:59:5C)
+
+Dès la connexion au réseau réalisée, un navigateur est ouvert et donne accès à l'interface utilisateur de gestion de la balise. Ce portail captif fonctionne très bien sous Windows mais est parfois un peu plus capricieux sous Android et peut petre nécessaire   de donner au navigateur une adresse pouvant être valide comme http://xx.fr pour accéder à l'interface utilisateur !!. Voir aussi  les problèmes potentiels lors du [téléchargement](#warning1) de traces GPS)
+
+Il est possible de modifier le nom du réseau et de le protéger par un mot de passe. Si après modification du nom du réseau on veut rétablir son nom par défaut il suffit d'effacer le champ "Nom du réseau" et de soumettre cette modification. Il n'est pas nécessaire de se souvenir de l'adresse MAC de la balise.
+
+Il est possible de couper le point d'accès en fonctionnement.  
+Si la coupure est autorisée elle interviendra après un délai suivant l'obtention d'un fix GPS ou si la vitesse de déplacement de la balise est supérieure à 2m/s (7.2km/h)   
+Si l'interface utilisateur est utilisée, ce délais commencera à courir uniquement lorsque la page "Cockpit" de l'interface est affichée.
+
+Il est possible de couper complètement l'activité Wi-Fi de la balise entre deux émissions de la trame d'identification. Ceci permet éventuellement une réduction des interactions entre les équipements de télécommande et la balise et **permet surtout d'abaisser fortement la consommation du dispositif**.
+
+Il est à noter que la mise en sommeil de la balise entraine un retard  de l'ordre de 20ms entre le moment où la trame doit être émise et son émission réelle. 
+
+**Remarque :** Dans le cas d’une balise construite avec un ESP8266, il est important d’utiliser une version du package de base ESP8266 supérieure à 3.0.0 car sinon ce retard  atteint 300ms ou plus ce qui peu être rédhibitoire si on veut en même temps  enregistrer des traces GPS  avec une haute résolution …
+
+
+### **Bouton  « Reset » :** 
+Redémarre la balise 
+### **Bouton « Formatage » :**
+Réinitialise le système de gestion de fichiers 
+### **Bouton « Maj OTA »**
+Permet une mise à jour très aisée du logiciel par la liaison Wi-Fi (au détriment de la mémoire réservée pour les fichiers traces, ce qui peut éventuellement être un problème avec  un module style ESP8266 avec peu de mémoire …)   
+l suffit de sélectionner le fichier résultat de compilation qui est  en général dans C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
+(Sélectionner le répertoire arduino\_build\_... qui a la date de modification la plus récente)
+
+
+#Mode Récepteur
+
+Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.
+Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises. 
+Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise sous tension en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+
+ <a name="scenario"> 
+ # **Scénario d'utilisation de la balise **
+
+Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemples des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …
+Scénario dutilisation:
+- Ne pas permettre la coupure du point d’accès Wi-Fi
+- Choisir une fréquence de rafraichissement GPS élevée ( 19200bds / 10Hz)
+- Choisir éventuellement de créer un fichier trace en prenant des points de mesure rapprochés (délais de 100ms entre points correspondants à la fréquence max de rafraichissement du GPS)
+- Faire un essai et faire revenir le mobile
+- Se reconnecter au point d’accès crée pas la balise.
+- Analyser la vitesse max rapportée dans la page « Cockpit »
+- Remettre à zéro ces valeurs
+- Changer les réglages et refaire un essai.
+- Etc …
+
+Les traces GPS enregistrés permettent de retrouver un historique des essais.
+
+Enjoy !
