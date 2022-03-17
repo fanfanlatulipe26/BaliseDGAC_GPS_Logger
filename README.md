@@ -1,6 +1,3 @@
-**Recepteur ??**
-
-
 # **BaliseDGAC\_GPS\_Logger V3  Emetteur/Récepteur**
 Version d'une balise de signalisation style DGAC pour  signalisation de drones et aéromodéles avec possibilité d'enregistrement des traces GPS. 
 La balise a deux modes de fonctionnement:
@@ -8,23 +5,24 @@ La balise a deux modes de fonctionnement:
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
 ![](#/img/bal1.jpg)
 
-|   ![](/img/bal1.jpg) | ![](/img/bal2.png)  |
+|   <img src="/img/bal1.jpg" width="400"> | <img src="/img/bal2.jpg" width="400">  |
 | ------------ | ------------ |
 
+
 ## **Crédit:**
-Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)
+Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
 Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 
 ## **Principales caractéristiques:**
-- Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'arrêté du 27 décembre 2019(loi drone …)
-- Mode émetteur ou récepteur
+- Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'arrêté du 27 décembre 2019 (loi drone …).
+- Mode émetteur ou récepteur.
 - Interface Web accessible sur un point d'accès (AP) crée par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
-- Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse
+- Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
 - Possibilité de coupure du Point d’Accès pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
 - Fonction d’enregistrement des traces GPS dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
-- Fonction de mise à jour du logiciel à travers la liaison Wi-Fi (OTA Over The Air)
-- code compatible ESP32/ ESP32-C3 / ESP8266 
+- Fonction de mise à jour du logiciel à travers la liaison Wi-Fi (OTA Over The Air).
+- code compatible ESP32/ ESP32-C3 / ESP8266. 
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemples des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …[Exemple ici](#scenario)
 
@@ -38,30 +36,29 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
-Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions/ brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour un antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.
+Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions/ brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour un antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
 Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
 
 ## **Message d'identification**
-La balise émet des messages d'identification conforme à l'arrêté du 27 décembre 2019
+Dès que la balise est sous-tension, même en l’absence d’un fix GPS, la balise émet des messages d'identification conforme à l'arrêté du 27 décembre 2019.  
 Le format de l'identifiant diffusé est le suivant:
 - Un code sur 3 caractères, censé représenter le trigramme constructeur. 
   Il doit être **obligatoirement** 000 pour une construction amateur "DIY"
 - Un code sur 3 caractères, censé représenter le modèle de la balise 
 - Un code sur 24 caractères, censé représenter le numéro de série de la balise.
 
-Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"
-Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.
+Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"  
+Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.   
 L'interface utilisateur affiche l'identifiant de la balise qui devra être enregistré sur le site AlphaTango.
-Les messages d’identifications sont envoyés dès que la balise est sous-tension, même en l’absence d’un fix GPS.
 
 
 ## **Environnement logiciel. Compilation**
-Les tests ont été faits dans l'environnement IDE Arduino 18.19
-Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2022: ESP32 2.0.2, ESP8266 3.0.2)
+Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
+Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2022: ESP32 2.0.2, ESP8266 3.0.2)  
 Seule la librairie TinyGPS++ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
 
-Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.
-
+Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
+Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
 Le choix du type de processeur est fait  lors de la compilation en sélectionnant le bon type de carte dans l'IDE Arduino
 
 ### **Modules GPS**
@@ -72,7 +69,7 @@ Choisir dans le fichier fs\_options.h  une des lignes :
 ou  
 \#define GPS\_ublox   // pour Beitian BN-220, BN-180, BN-880 et GPS style base chipset u-blox M8030-KT.  
 
-Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la partie GPS est compatible avec un BN-180,BN-220, BN-280)
+Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la partie GPS est compatible avec un BN-180,BN-220, BN-280)   
 Les GPS qui utilisent les commandes style $PMTK251, $PMTK220, $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, …) peuvent surement être utilisés.
 
 ### **Utilisation d'un LED**
@@ -90,7 +87,7 @@ La vitesse maximale ainsi que la hauteur maximale atteinte depuis la mise sous t
 ## **Fenêtre « Trace »** 
 La fenêtre « Trace » permet la gestion des traces GPS enregistrées.   
 Des couleurs mettent en évidence  le plus ancien, le plus gros et le plus récent fichiers.  
-Un click sur le nom d’un fichier ouvre une fenêtre donnant les caractéristiques principales de la trace (Nombre de points, heure de début/fin, vitesse maximum, hauteur maximum …)
+Un click sur le nom d’un fichier ouvre une fenêtre donnant les caractéristiques principales de la trace (Nombre de points, heure de début/fin, vitesse maximum, hauteur maximum …)   
 Un fichier peut être téléchargé localement pour analyse fine.
 
 <a name="warning1">**Attention :** dans certains cas (sous Android ?),  le navigateur ouvert automatiquement lors de la connexion au portail captif ne permet pas de faire des téléchargements de fichiers. Il faut alors utiliser explicitement le navigateur standard. Ceci ne se produit pas sur un PC Windows.
@@ -98,7 +95,6 @@ Un fichier peut être téléchargé localement pour analyse fine.
 ## **Fenêtre « Préférences »**
 Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraichissement), la gestion du point d’accès Wi-Fi
 ### **Format de la trace GPS**
-La fenêtre « Préférences » permet de configurer le type de traces enregistrées et téléchargées.
 On peut choisir d'enregistrer ou non une trace GPS.
 La création d’une trace ne commence qu’après l’obtention d’un fix GPS et l'enregistrement d'un nouveau point de trace est déclenché
 - Soit par une distance parcourue supérieure à X mètres
@@ -145,14 +141,15 @@ l suffit de sélectionner le fichier résultat de compilation qui est  en géné
 (Sélectionner le répertoire arduino\_build\_... qui a la date de modification la plus récente)
 
 
-#Mode Récepteur
+# Mode Récepteur
 
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.
 Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises. 
 Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise sous tension en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
 
- <a name="scenario"> 
- # **Scénario d'utilisation de la balise **
+ <a name="scenario">
+   
+ # Scénario d'utilisation de la balise
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemples des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …
 Scénario dutilisation:
@@ -168,4 +165,4 @@ Scénario dutilisation:
 
 Les traces GPS enregistrés permettent de retrouver un historique des essais.
 
-Enjoy !
+Enjoy !:blush:
