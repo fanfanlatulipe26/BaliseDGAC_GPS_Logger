@@ -1,3 +1,6 @@
+
+Ceci est une version beta. Les remarques sont les bienvenues !
+
 # **BaliseDGAC\_GPS\_Logger V3  Emetteur/Récepteur**
 Version d'une balise de signalisation style DGAC pour  signalisation de drones et aéromodèles avec possibilité d'enregistrement des traces GPS. 
 La balise a deux modes de fonctionnement:
@@ -135,9 +138,9 @@ Si l'interface utilisateur est utilisée, ce délai commencera à courir uniquem
 
 Il est possible de couper complètement l'activité Wi-Fi de la balise entre deux émissions de la trame d'identification. Ceci permet éventuellement une réduction des interactions entre les équipements de télécommande et la balise et **permet surtout d'abaisser fortement la consommation du dispositif**.
 
-Il est à noter que la mise en sommeil de la balise entraine un retard  de l'ordre de 20ms entre le moment où la trame doit être émise et son émission réelle. 
+Il est à noter que la mise en sommeil de la balise entraîne un retard  de l'ordre de 20ms entre le moment où la trame doit être émise et son émission réelle. 
 
-**Remarque :** Dans le cas d’une balise construite avec un ESP8266, il est important d’utiliser une version du package de base ESP8266 supérieure à 3.0.0 car sinon ce retard  atteint 300ms ou plus ce qui peu être rédhibitoire si on veut en même temps  enregistrer des traces GPS  avec une haute résolution …
+**Remarque :** Dans le cas d’une balise construite avec un ESP8266, il est important d’utiliser une version du package de base ESP8266 supérieure à 3.0.0 car sinon ce retard  atteint 300ms ou plus, ce qui peut être rédhibitoire si on veut en même temps  enregistrer des traces GPS  avec une haute résolution …
 
 
 ### **Bouton  « Reset » :** 
@@ -146,7 +149,7 @@ Redémarre la balise
 Réinitialise le système de gestion de fichiers 
 ### **Bouton « Maj OTA »**
 Permet une mise à jour très aisée du logiciel par la liaison Wi-Fi (au détriment de la mémoire réservée pour les fichiers traces, ce qui peut éventuellement être un problème avec  un module style ESP8266 avec peu de mémoire …)   
-l suffit de sélectionner le fichier résultat de compilation qui est  en général dans  
+Pour une mise à jour, il suffit de sélectionner le fichier résultat de compilation qui est  en général dans  
   C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
 (Sélectionner le répertoire arduino\_build\_... qui a la date de modification la plus récente)
 
@@ -156,20 +159,20 @@ l suffit de sélectionner le fichier résultat de compilation qui est  en géné
 | ------------ | ------------ |
 
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
-  Un click sur un identifiant de balise ouvre une page contenant desdétails sur les valeurs émises.   
-  Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise sous tension en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+  Un click sur un identifiant de balise ouvre une page contenant des détails sur les valeurs émises.   
+  Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise hors tension /en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
 
  <a name="scenario">
    
  # Scénario d'utilisation de la balise
 
-Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemples des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …
+Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles,  de bateaux du type racers/offshore, de modèle de voitures RC etc …
 Scénario dutilisation:
 - Ne pas permettre la coupure du point d’accès Wi-Fi
-- Choisir une fréquence de rafraichissement GPS élevée ( 19200bds / 10Hz)
-- Choisir éventuellement de créer un fichier trace en prenant des points de mesure rapprochés (délais de 100ms entre points correspondants à la fréquence max de rafraichissement du GPS)
+- Choisir une fréquence de rafraîchissement GPS élevée ( 19200bds / 10Hz)
+- Choisir éventuellement de créer un fichier trace en prenant des points de mesure rapprochés (Un délai de 100ms entre points correspondants à la fréquence max de rafraîchissement du GPS)
 - Faire un essai et faire revenir le mobile
-- Se reconnecter au point d’accès crée pas la balise.
+- Se reconnecter au point d’accès créé pas la balise.
 - Analyser la vitesse max rapportée dans la page « Cockpit »
 - Remettre à zéro ces valeurs
 - Changer les réglages et refaire un essai.
