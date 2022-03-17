@@ -6,6 +6,10 @@ Version d'une balise de signalisation style DGAC pour  signalisation de drones e
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
+![](#/img/bal1.jpg)
+
+|   ![](/img/bal1.jpg) | ![](/img/bal2.png)  |
+| ------------ | ------------ |
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)
