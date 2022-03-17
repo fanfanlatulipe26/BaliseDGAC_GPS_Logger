@@ -7,7 +7,7 @@ La balise a deux modes de fonctionnement:
 
 |   <img src="/img/bal1.jpg" width="400"> | <img src="/img/bal2.jpg" width="400">  |
 | ------------ | ------------ |
-
+Balise réalitée avec un module ESP32-C3 T-01C3. Poids: 11g
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drone et aéromodélisme est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
@@ -163,6 +163,6 @@ Scénario dutilisation:
 - Changer les réglages et refaire un essai.
 - Etc …
 
-Les traces GPS enregistrés permettent de retrouver un historique des essais.
+Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
 Enjoy !:blush:
