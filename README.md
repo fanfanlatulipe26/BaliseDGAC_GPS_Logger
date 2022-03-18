@@ -38,7 +38,7 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
-Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour un antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
+Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour une antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
 Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
 
 ## **Message d'identification**
