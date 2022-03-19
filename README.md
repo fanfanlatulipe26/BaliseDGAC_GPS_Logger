@@ -17,7 +17,7 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 
 ## **Principales caractéristiques:**
-- Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'arrêté du 27 décembre 2019 (loi drone …).
+- Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'[arrêté du 27 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000039685188) (loi drone …).
 - Mode émetteur ou récepteur.
 - Code compatible ESP32/ ESP32-C3 / ESP8266. 
 - Interface Web accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
