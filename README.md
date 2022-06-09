@@ -1,6 +1,4 @@
 
-Ceci est une version beta. Les remarques sont les bienvenues !
-
 # **BaliseDGAC\_GPS\_Logger V3  Emetteur/Récepteur**
 Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS. 
 La balise a deux modes de fonctionnement:
