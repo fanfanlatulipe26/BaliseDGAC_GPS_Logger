@@ -46,19 +46,19 @@
 // LILYGO® TTGO T-01C3 ESP32-C3
 // Config OK
 // Autre config LILYGO® TTGO T-01C3 ESP32-C3 plus simple cablage
-#define GPS_RX_PIN 8           // D1 Brancher le fil Tx du GPS . FS pour ESP01-C3/
-#define GPS_TX_PIN 9            // D2 Brancher le fil Rx du GPS . FS pour ESP01.(pour envoyer des commandes )
-#define pinFactoryReset 2
-#define pinLed 3  // builtin LED du module T-01C3
+//#define GPS_RX_PIN 8           // D1 Brancher le fil Tx du GPS . FS pour ESP01-C3/
+//#define GPS_TX_PIN 9            // D2 Brancher le fil Rx du GPS . FS pour ESP01.(pour envoyer des commandes )
+//#define pinFactoryReset 2
+//#define pinLed 3  // builtin LED du module T-01C3
 
 // Pour qq boards ESP32 dispo
 //#define GPS_RX_PIN 15            // D1 Brancher le fil Tx du GPS . FS pour ESP32 OLED 128x64 compil carte WEMOS LOLIN32
 //#define GPS_TX_PIN 13            // D2 Brancher le fil Rx du GPS . FS pour ESP32 OLED 128x64
 
-//#define GPS_RX_PIN 15           // D1 Brancher le fil Tx du GPS . FS pour ESP32 Dev Kit
-//#define GPS_TX_PIN 4            // D2 Brancher le fil Rx du GPS . FS pour ESP32 Dev Kit
-//#define pinLed 2              // builtin LED du module 32 Dev Kit
-//#define pinFactoryReset 13
+#define GPS_RX_PIN 15           // D1 Brancher le fil Tx du GPS . FS pour ESP32 Dev Kit
+#define GPS_TX_PIN 4            // D2 Brancher le fil Rx du GPS . FS pour ESP32 Dev Kit
+#define pinLed 2              // builtin LED du module 32 Dev Kit
+#define pinFactoryReset 13
 
 //#define GPS_RX_PIN 5            // D1 Brancher le fil Tx du GPS
 //#define GPS_TX_PIN 4            // D2 Brancher le fil Rx du GPS

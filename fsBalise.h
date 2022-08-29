@@ -22,7 +22,7 @@
 
 #include <TinyGPS++.h>
 
-const char versionSoft[] = "3.0";
+const char versionSoft[] = "3.1";
 #define DEBUG_HEAP false
 #ifndef ESP32
 #define dbgHeap(mes) \
@@ -41,18 +41,15 @@ const char versionSoft[] = "3.0";
 //  pour Android ??
 //enum { traceNone, traceGPX, traceCSV };
 struct pref { // preferences sauvées en EEPROM
-  char signature[6] = "ddd";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
+  char signature[6] = "dde";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
  //  char signature[6] = "ablfs";  // balfs  signature d'une EEPROM balise. Ne pas toucher
   char password[9] = ""; //  Par défaut le réseau créé est ouvert
   char ssid_AP[33] = ""; // Par défaut le ssid du point d'accés crée sera basé sur l'adresse MAC
-
-  char local_ip[16] = "124.213.16.29"; // vu dans  https://gitlab.com/defcronyke/wifi-captive-portal-esp-idf
-  char gateway[16] = "124.213.16.29" ; 
-  char subnet[16] = "255.0.0.0";
+//   valeurs de l'exemple CaptivePortal
+  char local_ip[16] = "8.8.4.4"; // The default android DNS
+  char gateway[16] = "8.8.4.4" ;
+  char subnet[16] = "255.255.255.0";
   
-  //char local_ip[16] = "192.168.4.1";    // c'est de toutes facons la valeur par défaut pour une softAP"8.8.8.8";    // 255.255.255.255     15 caractères max
-  //char gateway[16] = "192.168.4.1" ; // "8.8.8.8";
-  //char subnet[16] = "255.255.255.0";
   int timeoutWifi = 45;  // delais deconnection AP wifi
   int logAfter = 5 ;   // enregistrement d'un point si déplacement de 5m  (si <0, enregistrement après n millis sec)
   int baud = 9600;  // vitesse de transmission avec le GPS   19200 ((OK avec ESP8266), 38400 
