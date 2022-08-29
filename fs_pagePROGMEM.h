@@ -109,9 +109,11 @@ background-color:salmon;
 }
 .box {
 font-size:inherit;
+font-family:inherit;
 }
 input,button{
 font-size:inherit;
+font-family:inherit;
 border:5px solid  black ;
 border-radius:10px;
 }

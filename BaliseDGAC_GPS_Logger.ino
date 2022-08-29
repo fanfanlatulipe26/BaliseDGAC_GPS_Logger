@@ -1,6 +1,6 @@
 
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
-// 03/2022 v3 b1
+// 08/2022 v3.1
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
 //    (pins utilisées pour le GPS, option GPS, etc ...)
 
@@ -541,13 +541,15 @@ void setup()
   //transfert dans la variable globale ssid
   temp.toCharArray(ssid, 32);
   if (strlen(preferences.ssid_AP) != 0 ) strcpy (ssid, preferences.ssid_AP);
-  else strcpy (preferences.ssid_AP, ssid);
-  Serial.print(F("Setting soft-AP configuration ... "));
-  Serial.println(WiFi.softAPConfig(local_ip, gateway, subnet) ? F("Ready") : F("Failed!"));
+  else strcpy (preferences.ssid_AP, ssid); 
   Serial.print(F("Setting soft-AP ... "));
   // ssid, pwd, channel, hidden, max_cnx
-  Serial.println(WiFi.softAP(ssid, preferences.password, 6, false, 4) ? F("Ready") : F("Failed!"));  // 4 clients peris
+  Serial.println(WiFi.softAP(ssid, preferences.password, 6, false, 4) ? F("Ready") : F("Failed!"));  // 4 clients permis
   // Serial.println(WiFi.softAP(ssid, preferences.password, 6, false, 1) ? F("Ready") : F("Failed!")); // 1 client permis
+  delay(200);
+  Serial.print(F("Setting soft-AP configuration ... "));
+  Serial.println(WiFi.softAPConfig(local_ip, gateway, subnet) ? F("Ready") : F("Failed!"));
+  delay(200);
   Serial.print(F("IP address for AP network "));
   Serial.print(ssid);
   Serial.print(F(" : "));
