@@ -1,5 +1,5 @@
 
-# **BaliseDGAC\_GPS\_Logger V3  Emetteur/Récepteur**
+# **BaliseDGAC\_GPS\_Logger V3.1  Emetteur/Récepteur**
 Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS. 
 La balise a deux modes de fonctionnement:
 - Mode émetteur
@@ -178,4 +178,10 @@ Scénario dutilisation:
 
 Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
+ # Principales modifications
+ - depuis 3.0
+     - amélioration du système de portail captif (changement de l'adresse IP de la balise etc...)
+     - cosmétique dans l'interface Web
+ 
+ 
 Enjoy !:blush:
