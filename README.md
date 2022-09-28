@@ -32,16 +32,16 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
-- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) 
-
- - **Attention**: une configuration basée sur un ESP32-C3 et incluant un module GSM n'est pas supportée (cette limitation existe encore avec Arduino Core ESP32 version 2.0.5)
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) <br>
+**Attention**: une configuration basée sur un ESP32-C3 et incluant un module GSM n'est pas supportée (cette limitation existe encore avec Arduino Core ESP32 version 2.0.5)
 
 **Modules GPS supportés:**
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
 **Module optionel GSM supporté:**
-- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") countant quelques Euro.
+- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") countant quelques Euro.<br>
+[Voir ici quelques remarques sur le module SIM800L](#SIM800L)
 
 Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour une antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
 Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
@@ -170,6 +170,17 @@ Pour une mise à jour, il suffit de sélectionner le fichier résultat de compil
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
   Un click sur un identifiant de balise ouvre une page contenant des détails sur les valeurs émises.   
   Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise hors tension /en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+  
+<a name="SIM800L">
+
+# Remarques sur le module GSM SIM800L  
+ <img src="/img/sim800L.jpg"  align="left"  width=500>  
+C'est un moduke 2G, parfois très instables et ne peuvnt se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** **GSM SIM800L** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
+ 
+Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
+Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toute les 3 secondes.  
+ Une carte micro SIM est bien sûr nécessaire.(Un "simple" forfait 0€ / 2€ chez un opérateur français bien connu fait l'affaire ! ...)
+ 
 
  <a name="scenario">
    
