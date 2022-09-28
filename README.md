@@ -1,6 +1,7 @@
 
-# **BaliseDGAC\_GPS\_Logger V3.1  Emetteur/Récepteur**
-Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS. 
+# **BaliseDGAC\_GPS\_Logger V4.0b1  Emetteur/Récepteur/Tracker GSM**
+
+Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionellement un module GSM permettant de recevoir un SMS de localisation.
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
@@ -17,6 +18,7 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 ## **Principales caractéristiques:**
 - Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'[arrêté du 27 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000039685188) (loi drone …).
 - Mode émetteur ou récepteur.
+- Possibilité d'inclure un module GSM pour recevoir un SMS de localisation facilitant la recherche du modèle en cas de perte.
 - Code compatible ESP32/ ESP32-C3 / ESP8266. 
 - Interface Web accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
 - Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
@@ -36,6 +38,9 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
+**Module optionel GSM supporté:**
+- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") countant quelques Euro.
+
 Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour une antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
 Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
 
@@ -51,6 +56,10 @@ Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"
 Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.   
 L'interface utilisateur affiche l'identifiant de la balise qui devra être enregistré sur le site AlphaTango.
 
+## **SMS de localisation**
+Il est possible d'inclure dans la réalisation un module GSM permettant d'envoyer sur demande un SMS de localisation.
+Par défaut, si la balise reçoit un SMS elle répond par un SMS contenant un lien avec les dernières coordonnées GPS valides connues. Ce lien ouvre Google Maps avec un pointeur sur la position du modèle.
+Il est possible par l'interface Web de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
 
 ## **Environnement logiciel. Compilation**
 Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
