@@ -32,7 +32,9 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
-- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3)
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) 
+
+ - **Attention**: une configuration basée sur un ESP32-C3 et incluant un module GSM n'est pas supportée (cette limitation existe encore avec Arduino Core ESP32 version 2.0.5)
 
 **Modules GPS supportés:**
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
