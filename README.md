@@ -174,13 +174,16 @@ Le mode récepteur permet de contrôler le fonctionnement des balises actives du
 <a name="SIM800L">
 
 # Remarques sur le module GSM SIM800L  
- <img src="/img/sim800L.jpg"  align="left"  width=500>  
-C'est un moduke 2G, parfois très instables et ne peuvnt se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** **GSM SIM800L** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
+  <p>
+ <img src="/img/sim800L.jpg"  align="left"  width=500>
+  </p>  
+  
+C'est un moduke 2G, parfois très instables et ne peuvnt se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
  
 Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
 Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toute les 3 secondes.  
- Une carte micro SIM est bien sûr nécessaire.(Un "simple" forfait 0€ / 2€ chez un opérateur français bien connu fait l'affaire ! ...)
- 
+ Une carte micro SIM est bien sûr nécessaire.(Un "simple" forfait 0€ / 2€ chez un opérateur français bien connu fait l'affaire ! ...)  
+
 
  <a name="scenario">
    
@@ -204,6 +207,8 @@ Les traces GPS enregistrées permettent de retrouver un historique des essais.
  - depuis 3.0
      - amélioration du système de portail captif (changement de l'adresse IP de la balise etc...)
      - cosmétique dans l'interface Web
+ - depuis 3.1
+   - ajout option répondeur GSM/SMS
  
  
 Enjoy !:blush:
