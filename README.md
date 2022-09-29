@@ -31,7 +31,7 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 
 <img src="/img/schéma_2_schéma_1.jpg" width="600">  
 Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
-Les noms des pins sur le module processeur ESP correspond aux noms des pins qui doivent être définies dans le fichier fs_config.h (voir plus loin)
+Les noms des pins sur le module processeur ESP correspond aux noms des pins qui doivent être définies dans le fichier fs_options.h (voir plus loin)
 
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
@@ -73,7 +73,7 @@ Les tests ont été faits dans l'environnement IDE Arduino 18.19.
 Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Septembre 2022: ESP32 2.0.5, ESP8266 3.0.2)  
 Seule la librairie TinyGPS++ ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
 
-Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
+Avant de compiler il faut choisir quelques options dans le fichier **fs\_options.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
 Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
 Le choix du type de processeur est fait  lors de la compilation en sélectionnant le bon type de carte dans l'IDE Arduino
 
@@ -89,7 +89,7 @@ Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la
 Les GPS qui utilisent les commandes style $PMTK251, $PMTK220, $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, …) peuvent sûrement être utilisés.
 
 ### **Utilisation d'un LED**
-Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_option.h)  son clignotement est rythmé par l'émission des trames d'identification. 
+Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_options.h)  son clignotement est rythmé par l'émission des trames d'identification. 
 - En absence de fix GPS: clignotement lent, période de 6 secondes.
 - Après un fix GPS: flash très rapide lors de l'envoi d'une trame. (le flash est un peu plus long si la balise est en mode économie d'énergie/mise en sommeil)
 
@@ -209,11 +209,11 @@ Scénario dutilisation:
 Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
  # Principales modifications
- - depuis 3.0
+- 4.0
+  - ajout option répondeur GSM/SMS
+   - gestion led "inversé"
+ -  3.1
      - amélioration du système de portail captif (changement de l'adresse IP de la balise etc...)
      - cosmétique dans l'interface Web
- - depuis 3.1
-   - ajout option répondeur GSM/SMS
- 
  
 Enjoy !:blush:
