@@ -29,7 +29,9 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
 
-<img src="/img/schéma_2_schéma_1.jpg" width="600">
+<img src="/img/schéma_2_schéma_1.jpg" width="600">  
+Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
+Les noms des pins sur le module processeur ESP correspond aux noms des pins qui doivent être définies dans le fichier fs_config.h (voir plus loin)
 
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
@@ -68,7 +70,7 @@ Il est possible par l'interface Web de protéger cette fonction par un mot de pa
 
 ## **Environnement logiciel. Compilation**
 Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
-Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2022: ESP32 2.0.2, ESP8266 3.0.2)  
+Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Septembre 2022: ESP32 2.0.5, ESP8266 3.0.2)  
 Seule la librairie TinyGPS++ ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
 
 Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
@@ -184,7 +186,7 @@ Le mode récepteur permet de contrôler le fonctionnement des balises actives du
 C'est un moduke 2G, parfois très instables et ne peuvnt se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
  
 Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
-Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toute les 3 secondes.  
+Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toutes les 3 secondes.  
  Une carte micro SIM est bien sûr nécessaire.(Un "simple" forfait 0€ / 2€ chez un opérateur français bien connu fait l'affaire ! ...)  
 
 
