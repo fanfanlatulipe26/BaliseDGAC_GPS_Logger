@@ -155,37 +155,36 @@ function gel(id){return document.getElementById(id);}
 </head>
 )=====";
 // location.replace('/recepteur')"   location.assign('/recepteur')"
+
+const char topMenu[] PROGMEM = R"=====(
+<body>
+<div class ="card">
+<table class ='nobord'>
+<tr>
+<td class ='nobord'><button class='b1' onclick="location.replace('/cockpit')">Cockpit</button></td>
+<td class ='nobord'><button class='b1' onclick="location.replace('/spiff')">Traces</button></td>
+<td class ='nobord'><button class='b1' onclick="location.replace('/optionsSysteme')">Préférences</button></td>
+)====="
 #ifdef fs_RECEPTEUR
-const char topMenu[] PROGMEM = R"=====(
-<body>
-<div class ="card">
-<table class ='nobord'>
-<tr>
-<td class ='nobord'><button class='b1' onclick="location.replace('/cockpit')">Cockpit</button></td>
-<td class ='nobord'><button class='b1' onclick="location.replace('/spiff')">Traces</button></td>
-<td class ='nobord'><button class='b1' onclick="location.replace('/optionsSysteme')">Préférences</button></td>
+R"=====(
 <td class ='nobord'><button class='b1' onclick="window.history.pushState({'nom':'toto'}, 'il faut reset', '/reset');location.assign('/recepteur')">Récepteur</button></td>
-</tr>
-</table>
-</div>
-)=====";
-#else
-const char topMenu[] PROGMEM = R"=====(
-<body>
-<div class ="card">
-<table class ='nobord'>
-<tr>
-<td class ='nobord'><button class='b1' onclick="location.replace('/cockpit')">Cockpit</button></td>
-<td class ='nobord'><button class='b1' onclick="location.replace('/spiff')">Traces</button></td>
-<td class ='nobord'><button class='b1' onclick="location.replace('/optionsSysteme')">Préférences</button></td>
-</tr>
-</table>
-</div>
-)=====";
+)====="
 #endif
+R"=====(
+</tr>
+</table>
+</div>
+)=====";
+
 const char menuSysteme[] PROGMEM = R"=====(
 <div class ='card'>
+)====="
+#ifdef fs_OTA
+R"=====(
 <button class='b1' onclick="document.location='/OTA_'">MaJ OTA</button>
+)====="
+#endif
+R"=====(
 <button class='b1' onclick="document.location='/reset'">Reset</button>
 <button class='b2' onclick='if(confirm("Voulez vous vraiment reformater le syst&egrave;me de fichiers\n et tout effacer ?")){document.location="/formatage_"}'>Formatage</button>
 </div>
@@ -269,6 +268,20 @@ Basse consommation après coupure?
 <label for="ssid_AP">Nom du réseau</label>
 <input type="text" id="ssid_AP" name="ssid_AP" pattern="[0-9a-zA-Z:_-]*" size ="35" minlength="1"  maxlength="32" value="">
 </form>
+)====="
+#ifdef repondeurGSM
+R"=====(
+<form action="/optionSMSCommand">
+<hr><b>Gestion de l'envoi d'un SMS de localisation</b><input style="float: right;" type="submit" value="Envoyer">
+<p>
+<label for="SMSCommand">Mot de passe</label>
+<input type="text" id="SMSCommand" name="SMSCommand" size ="8" maxlength="8" value="">
+ (pour <span id="myPhoneNumber">zzz</span> )
+<br>
+</form>
+)====="
+#endif
+R"=====(
 <form action="/resetUsine">
 <hr><input style="float: right;" type="submit" value="Restauration des valeurs par défaut">
 <p>&nbsp
@@ -338,20 +351,20 @@ getData();
 </div>
 )=====";
 
+
+const char cockpit_fin[] PROGMEM = R"=====(
+<div class="card">
+<button class='b1' onclick="document.location='/razVMaxHMAx'">RAZ des VMax/HMAx</button>
+)====="
 #ifdef fs_STAT
-const char cockpit_fin[] PROGMEM = R"=====(
-<div class="card">
-<button class='b1' onclick="document.location='/razVMaxHMAx'">RAZ des VMax/HMAx</button>
+R"=====(
 <button class='b1' onclick="location.replace('/stat')">Stats</button>
-</div></body></html>
-)=====";
-#else
-const char cockpit_fin[] PROGMEM = R"=====(
-<div class="card">
-<button class='b1' onclick="document.location='/razVMaxHMAx'">RAZ des VMax/HMAx</button>
-</div></body></html>
-)=====";
+)====="
 #endif
+R"=====(
+</div></body></html>
+)=====";
+
 
 #ifdef fs_STAT
 const char statistics[] PROGMEM = R"=====(

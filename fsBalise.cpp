@@ -22,6 +22,7 @@
 #include "fs_recepteur.h"
 //#endif
 #include "fs_pagePROGMEM.h"
+#include "AsyncSMS.h"
 #include <LittleFS.h>
 #include <EEPROM.h>
 #ifdef ESP32
@@ -30,6 +31,7 @@ extern fs_WebServer server;
 #else
 extern ESP8266WebServer server;
 #endif
+extern AsyncSMS smsHelper;
 extern boolean traceFileOpened;
 extern bool fileSystemFull;
 extern String messAlarm;
@@ -44,6 +46,10 @@ extern TinyGPSPlus gps;
 
 struct pref preferences;
 struct pref factoryPrefs;
+
+//  Ne pas utiliser delay(xxx) car celà cause des problème sur ESP32-C3 avec espsoftwareserial/getCycleCount 
+//  Voir https://github.com/espressif/arduino-esp32/issues/6920
+// Attention: pour ESP8266 il faut un delay "standard"  ....
 
 void sendChunkDebut ( bool avecTopMenu ) {
   server.chunkedResponseModeStart(200, "text/html");
@@ -417,7 +423,7 @@ bool loadFromSPIFFS(String path) {
         // 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
         // 103 + 2(cr/lf) + 1     106 caractères max pour une entrée
         if (sizeof(buf) - deb < 120 ) {
-         // Serial.printf_P(PSTR("Ecriture buffer download %i\n"), deb);
+          // Serial.printf_P(PSTR("Ecriture buffer download %i\n"), deb);
           server.sendContent((const char*)buf, deb);
           deb = 0;
           buf[0] = 0;
@@ -515,13 +521,13 @@ void handleFileInfo() {
   uint32_t Tdeb = trackLigneFirst.hour * 360000 + trackLigneFirst.minute * 6000 + trackLigneFirst.second * 100 + trackLigneFirst.centisecond;
   uint32_t Tfin = trackLigne.hour * 360000 + trackLigne.minute * 6000 + trackLigne.second * 100 + trackLigne.centisecond;
   uint32_t duree = Tfin - Tdeb;
-  Serial.printf("%u %u %u\n", Tdeb, Tfin, duree);
+  Serial.printf_P(PSTR("%u %u %u\n"), Tdeb, Tfin, duree);
   unsigned int hh, mm, ss, cc;
   hh = duree / 360000;
   mm = (duree - hh * 360000) / 6000;
   ss = (duree - hh * 360000 - mm * 6000) / 100;
   cc = (duree - hh * 360000 - mm * 6000 - ss * 100);
-  Serial.printf("%u:%u:%u.%u\n", hh, mm, ss, cc);
+  Serial.printf_P(PSTR("%u:%u:%u.%u\n"), hh, mm, ss, cc);
 
   server.chunkedResponseModeStart(200, "text/html");
   server.sendContent_P(fs_style);
@@ -572,7 +578,9 @@ void handleGestionSpiff() {
   gestionSpiff("Liste des traces (téléchargement " + String(preferences.formatTrace) + ")");
 }
 
-// Panic !: on ecrase la conf avec la conf par defaut
+// Panic !: on restaure la conf avec la conf par defaut
+// L'appel à checkFactoryReset est fait dès le début, alors que la structure contient encore les valeurs par 
+//  defaut définies dans fs_balise.h. 
 void checkFactoryReset() {
 #ifdef pinFactoryReset
   pinMode(pinFactoryReset, INPUT_PULLUP);
@@ -606,6 +614,7 @@ void savePreferences() {
 void listPreferences() {
   Serial.print(F("password : ")); Serial.println(preferences.password);
   Serial.print(F("ssid_AP : ")); Serial.println(preferences.ssid_AP);
+  Serial.print(F("SMSCommand : ")); Serial.println(preferences.SMSCommand);
   Serial.print(F("logOn : ")); Serial.println(preferences.logOn ? "TRUE" : "FALSE");
   Serial.print(F("logToujours : ")); Serial.println(preferences.logToujours ? "TRUE" : "FALSE");
   Serial.print(F("logAfter : ")); Serial.println(preferences.logAfter);
@@ -681,10 +690,22 @@ void handleOptionPointAccesProcess() {
   displayOptionsSysteme("Préferences mises à jour.");
 }
 
+void handleOptionSMSCommand() {
+  server.arg("SMSCommand").toCharArray(preferences.SMSCommand, 9); //   forcer à 8  ??     init ""  ????????????
+  savePreferences();
+  listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
+  displayOptionsSysteme("Préferences mises à jour.");
+}
+
+
 void handleOptionsPreferences() {
   server.sendContent_P(pageOption);
   String message = "<script>gel('password').value = '" + String(preferences.password) + "'";
   message += "; gel('ssid_AP').value = '" + String(preferences.ssid_AP) + "'";
+  #ifdef repondeurGSM
+  message += "; gel('SMSCommand').value = '" + String(preferences.SMSCommand) + "'";
+  message += "; gel('myPhoneNumber').innerHTML = '" + String ( smsHelper.myPhoneNumber) +"'";
+  #endif
   //  message += "; gel('local_ip').value = '" + String(preferences.local_ip) + "'";
   //  message += "; gel('gateway').value = '" + String(preferences.gateway) + "'";
   //  message += "; gel('subnet').value = '" + String(preferences.subnet) + "'";
@@ -764,6 +785,9 @@ void fs_initServerOn( ) {
   server.on("/optionLogProcess", handleOptionLogProcess);
   server.on("/optionGPSProcess", handleOptionGPSProcess);
   server.on("/optionPointAccesProcess", handleOptionPointAccesProcess);
+#ifdef repondeurGSM
+  server.on("/optionSMSCommand", handleOptionSMSCommand);
+#endif
   server.on("/resetUsine", handleResetUsine);
   server.on("/reset", handleReset);
 #ifdef fs_STAT
@@ -776,7 +800,6 @@ void fs_initServerOn( ) {
   server.on("/recepteurRefresh", handleRecepteurRefresh);
   server.on("/recepteurDetail", handleRecepteurDetail);
 #endif
-
 #ifdef fs_OTA
   fs_initServerOnOTA(server); // server.on spécicifiques à OTA
 #endif
