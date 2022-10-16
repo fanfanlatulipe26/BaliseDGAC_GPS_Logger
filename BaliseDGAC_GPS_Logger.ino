@@ -223,7 +223,7 @@ HardwareSerial serialGPS(1);   // utilisation uart 1 pour GPS (uart 0 debug)
 #pragma message "Utilisation de HardwareSerial pour GPS !"
 #else
 SoftwareSerial serialGPS;  // pour ESP8266   softwareserial uniquement
-#pragma message "Utilisation de SoftwareSerial pour GPS !
+#pragma message "Utilisation de SoftwareSerial pour GPS !"
 #endif
 TinyGPSPlus gps;
 
