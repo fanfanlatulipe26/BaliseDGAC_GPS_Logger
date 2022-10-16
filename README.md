@@ -182,7 +182,7 @@ Le mode récepteur permet de contrôler le fonctionnement des balises actives du
  <img src="/img/sim800L.jpg"  align="left"  width=500><img src="/img/IMG_20221016_145705.jpg" align="center"   width=400>
   </p>  
   
-C'est un module 2G, parfois très instable et ne peuvant se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
+C'est un module 2G, parfois très instable et ne pouvant se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
 
 Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
 Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toutes les 3 secondes.  
