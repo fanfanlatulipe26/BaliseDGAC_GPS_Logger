@@ -31,14 +31,13 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 
 <img src="/img/schéma_2_schéma_1.jpg" width="600">  
 Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
-Les noms des pins sur le module processeur ESP correspond aux noms des pins qui doivent être définies dans le fichier fs_options.h (voir plus loin)
+Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définies dans le fichier fs_options.h (voir plus loin)
 
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
 - ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) <br>
-**Attention**: une configuration basée sur un ESP32-C3 et incluant un module GSM n'est pas supportée (cette limitation existe encore avec Arduino Core ESP32 version 2.0.5)
 
 **Modules GPS supportés:**
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
@@ -183,7 +182,7 @@ Le mode récepteur permet de contrôler le fonctionnement des balises actives du
  <img src="/img/sim800L.jpg"  align="left"  width=500>
   </p>  
   
-C'est un moduke 2G, parfois très instables et ne peuvnt se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
+C'est un module 2G, parfois très instable et ne peuvant se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
  
 Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
 Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toutes les 3 secondes.  
@@ -211,8 +210,8 @@ Les traces GPS enregistrées permettent de retrouver un historique des essais.
  # Principales modifications
 - 4.0
   - ajout option répondeur GSM/SMS
-   - gestion led "inversé"
- -  3.1
+  - gestion led "inversé"
+-  3.1
      - amélioration du système de portail captif (changement de l'adresse IP de la balise etc...)
      - cosmétique dans l'interface Web
  
