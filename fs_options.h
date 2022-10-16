@@ -32,7 +32,7 @@
 //--------------------------------------------------------------------------------------------------------
 //  Options logiciel. 
 #define fs_OTA        // pour permettre une mise a jour OTA pour logiciel 
-//#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
+#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
 #define repondeurGSM  // pour envoyer dans un SMS la position avec une module GSM SIM800L (uniquement pour une carte à base ESP32 / ESP32C3)
 //#define fs_STAT     // pour avoir une page de statisques,durée exécution, erreurs GPS, etc ...Utile en phase développement ..
 
@@ -55,14 +55,14 @@
 
 //--------------------------------------------------------------------------------------------------------
 // Pour 8266 ESP8266 D1 MINI Pro 
-
+/*
 #define GPS_RX_PIN 4           // sur pin 4, label D2, brancher le fil Tx du GPS .
 #define GPS_TX_PIN 5            // sur pin 5, label D1, brancher le fil Rx du GPS .(pour envoyer des commande )
 #define GSM_RX 16   // sur pin 16, label D0, vers RX du module GSM SIM800L
 #define GSM_TX 14   // sur pin 14, label D5, vers TX du module GSM SIM800L
 //#define pinFactoryReset 2 
 #define pinLed -2   //  LRD inversé sur ce moduke (ON si LOW)
-
+*/
 //--------------------------------------------------------------------------------------------------------------------------
 // Pour ESP01-C3  , même format que ESP01 mais avec un ESP32-C3
 // LILYGO® TTGO T-01C3 ESP32-C3
@@ -71,20 +71,22 @@
 #define GPS_TX_PIN 9            // D2 Brancher le fil Rx du GPS .
 #define pinFactoryReset 2
 #define pinLed 3  // optionel. builtin LED du module T-01C3
-#define GSM_RX 2    //  exemple pour TTGO T-01C3 ESP32-C3 RX du module GSM SIM800L sur pin 2 GPIO2 module: transmssion ver GSM
-#define GSM_TX 20   //  exemple pour TTGO T-01C3 ESP32-C3 TX du module GSM SIM800L sur pin RX0 du module (pin GPIO20 de ESP32-C3): réception duGSM
+// GSM pas testé sur ce module ....
+//#define GSM_RX 2    //  exemple pour TTGO T-01C3 ESP32-C3 RX du module GSM SIM800L sur pin 2 GPIO2 module: transmssion ver GSM
+//#define GSM_TX 20   //  exemple pour TTGO T-01C3 ESP32-C3 TX du module GSM SIM800L sur pin RX0 du module (pin GPIO20 de ESP32-C3): réception duGSM
+//#define GSM_RX 21   // vers RX du module GSM SIM800L  U0TX
+//#define GSM_TX 20   // vers TX du module GSM SIM800L  U0RX
 */
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour module  ESP3-C3-32S-kit  NodeMCU-Series
-/*
+
 #define GPS_RX_PIN 9             // D1 Brancher le fil Tx du GPS . 
 #define GPS_TX_PIN 10            // D2 Brancher le fil Rx du GPS . 
-//#define GSM_RX 6   // vers RX du module GSM SIM800L
-//#define GSM_TX 7   // vers TX du module GSM SIM800L
 #define GSM_RX 19   // vers RX du module GSM SIM800L
 #define GSM_TX 18   // vers TX du module GSM SIM800L
+// On ne peu utiliser pin 20/21 car conflit avec adaptateur USB pour UART0 ???
 //#define pinLed 19
-*/
+
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour ESP32 OLED 128x64 compil carte WEMOS LOLIN32
 /*

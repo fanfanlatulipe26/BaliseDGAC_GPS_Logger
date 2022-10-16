@@ -110,6 +110,7 @@ void AsyncSMS::process() {
     Serial.println(_receivedMessageIndex);
     for (uint16_t i = 0 ; i < _receivedMessageIndex ; i ++) {
       Serial.print(_receivedMessage[i]);
+      Serial.printf("(0x%02x)",_receivedMessage[i]);
       Serial.print(" ");
     }
     Serial.println("");

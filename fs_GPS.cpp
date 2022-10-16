@@ -16,7 +16,6 @@
 #include "fs_options.h"
 
 #if defined(ESP32)
-#include <HardwareSerial.h>
 extern HardwareSerial serialGPS;
 #else
 #include <SoftwareSerial.h>

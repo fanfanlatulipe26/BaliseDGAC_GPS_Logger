@@ -1,3 +1,6 @@
+
+//  - voir pour utiliser les 2 uarts de l'esp8266
+
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
 // 10/2022 v4.0b1
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
@@ -18,7 +21,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /*------------------------------------------------------------------------------
- 
+
   Author: FS
   Platforms: ESP8266 / ESP32 / ESP32-C3
   Language: C++/Arduino
@@ -32,7 +35,11 @@
   ------------------------------------------------------------------------------*/
 
 #ifdef ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+#pragma message "Compilation pour ESP32C3 !"
+#else
 #pragma message "Compilation pour ESP32 !"
+#endif
 #include <WiFi.h>
 #include "fs_WebServer.h"
 #elif defined(ESP8266)
@@ -57,22 +64,13 @@
 //#endif
 #include "fs_pagePROGMEM.h"
 
-#if defined(ESP32)
+
 #ifdef repondeurGSM
 #pragma message "Code GSM!"
 #include "fs_GSM.h"
+#if defined (ESP8266)
 #include <SoftwareSerial.h>
-#pragma message "Utilisation de SotfwareSerial pour GSM !"
 #endif
-#include <HardwareSerial.h>
-#pragma message "Utilisation de HardwareSerial pour GPS !"
-#else
-#include <SoftwareSerial.h>
-#ifdef repondeurGSM
-#pragma message "Code GSM!"
-#include "fs_GSM.h"
-#endif
-#pragma message "Utilisation de SotfwareSerial pour GPS !"
 #endif
 
 extern pref preferences;
@@ -221,9 +219,11 @@ char cGPS;
 
 
 #if defined(ESP32)
-HardwareSerial serialGPS(1);
+HardwareSerial serialGPS(1);   // utilisation uart 1 pour GPS (uart 0 debug)
+#pragma message "Utilisation de HardwareSerial pour GPS !"
 #else
-SoftwareSerial serialGPS(GPS_RX_PIN, GPS_TX_PIN);
+SoftwareSerial serialGPS;  // pour ESP8266   softwareserial uniquement
+#pragma message "Utilisation de SoftwareSerial pour GPS !
 #endif
 TinyGPSPlus gps;
 
@@ -522,7 +522,7 @@ void setup()
 #if defined(ESP32)
   serialGPS.begin(9600, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN );
 #else
-  serialGPS.begin(9600);
+  serialGPS.begin(9600, SWSERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN );
   if (!serialGPS) { // If the object did not initialize, then its configuration is invalid
     Serial.println(F("Invalid SoftwareSerial pin configuration, check config"));
     while (1) { // Don't continue with invalid configuration

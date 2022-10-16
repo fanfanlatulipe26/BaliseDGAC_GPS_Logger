@@ -23,8 +23,7 @@
 #include "esp_wifi.h"
 #include <WiFi.h>
 #include "fs_WebServer.h"
-extern fs_WebServer server;;
-#include <HardwareSerial.h>
+extern fs_WebServer server;
 extern HardwareSerial serialGPS;
 #include <LittleFS.h>
 
