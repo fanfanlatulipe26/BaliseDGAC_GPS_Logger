@@ -37,7 +37,6 @@ void AsyncSMS::reinitGSMModuleConnection() {
   enqueue("AT+CNUM");  //  FS +++++++++++++++++++++++++++++++++++++ pour retrouver le N° de telephone
   enqueue("AT+CREG=1");
   enqueue("ATE0");
-  //enqueue("AT+CMGL=\"ALL\",1");   //   FS ++++++++++++++++++++
   if (_autoStateRefresh) {
     _stateRefreshTimer.start(5000);
   }
@@ -221,12 +220,12 @@ void AsyncSMS::handleCommandResponse() {
     //   Serial.print("dup:"); Serial.println(dup);
     char *ptr ;
     //   Serial.println(ptr);
-    ptr = strtok(dup, ",");  // skipp first string.  prt points to the first ", and the first"," is change by /0
+    ptr = strtok(dup, ",");  // skip first string.  prt points to the first ", and the first"," is change by /0
     //   Serial.println(ptr);
     ptr = strtok(NULL, ","); // get phone number  . Point to         "the phone nbr" and the next "," changed with /0
     //  Serial.println(ptr);
     if (ptr != NULL) {
-      ptr = strtok(ptr, "\"");  // skipp first "  . Point to beginning of phone number and the ending " is change in /0
+      ptr = strtok(ptr, "\"");  // skip first "  . Point to beginning of phone number and the ending " is change in /0
       //    Serial.println(ptr);
       strcpy( myPhoneNumber, ptr);
     }
@@ -260,7 +259,7 @@ void AsyncSMS::checkRegistrationState(uint8_t registrationEnabledState, uint8_t 
 }
 
 void AsyncSMS::deleteAllSMS() {
-  _gsm->write("AT+CMGDA=DEL ALL\r\n");
+  enqueue("AT+CMGDA=DEL ALL");
 }
 
 bool AsyncSMS::isNewSMS() {

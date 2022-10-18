@@ -1,4 +1,3 @@
-
 //  - voir pour utiliser les 2 uarts de l'esp8266
 
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
