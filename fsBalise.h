@@ -22,7 +22,7 @@
 
 #include <TinyGPS++.h>
 
-const char versionSoft[] = "3.1";
+const char versionSoft[] = "4.0b1";
 #define DEBUG_HEAP false
 #ifndef ESP32
 #define dbgHeap(mes) \
@@ -41,9 +41,10 @@ const char versionSoft[] = "3.1";
 //  pour Android ??
 //enum { traceNone, traceGPX, traceCSV };
 struct pref { // preferences sauvées en EEPROM
-  char signature[6] = "dde";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
+  char signature[6] = "ddf";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
  //  char signature[6] = "ablfs";  // balfs  signature d'une EEPROM balise. Ne pas toucher
   char password[9] = ""; //  Par défaut le réseau créé est ouvert
+  char SMSCommand[9] = ""; //  Par défaut on met toujours les coordonnées dans le SMS envoyé
   char ssid_AP[33] = ""; // Par défaut le ssid du point d'accés crée sera basé sur l'adresse MAC
 //   valeurs de l'exemple CaptivePortal
   char local_ip[16] = "8.8.4.4"; // The default android DNS
@@ -108,6 +109,7 @@ void listPreferences();
 void handleOptionLogProcess();
 void handleOptionGPSProcess();
 void handleOptionPointAccesProcess();
+void handleOptionSMSCommand();
 void handleOptionsPreferences();
 void handleResetUsine();
 void handleReset();

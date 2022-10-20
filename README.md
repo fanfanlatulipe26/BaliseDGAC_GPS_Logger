@@ -1,13 +1,14 @@
 
-# **BaliseDGAC\_GPS\_Logger V3.1  Emetteur/Récepteur**
-Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS. 
+# **BaliseDGAC\_GPS\_Logger V4.0b1  Emetteur/Récepteur/Tracker GSM**
+
+Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation.
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
 
 |   <img src="/img/bal1.jpg" width="400"> | <img src="/img/bal2.jpg" width="400">  |
 | ------------ | ------------ |
-|Balise réalisée avec un module ESP32-C3 T-01C3. Poids: 11g|  [Quelques photos de la réalisations](/realisation.md)|
+|Balise réalisée avec un module ESP32-C3 T-01C3. Poids: 11g|  [Quelques photos de la réalisation](/realisation.md)|  
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drones et aéromodèles est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
@@ -17,6 +18,7 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 ## **Principales caractéristiques:**
 - Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'[arrêté du 27 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000039685188) (loi drone …).
 - Mode émetteur ou récepteur.
+- Possibilité d'inclure un module GSM pour recevoir un SMS de localisation facilitant la recherche du modèle en cas de perte.
 - Code compatible ESP32/ ESP32-C3 / ESP8266. 
 - Interface Web accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
 - Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
@@ -26,15 +28,24 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
+
+<img src="/img/schéma_2_schéma_1.jpg" width="600">  
+Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
+Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définis dans le fichier fs_options.h (voir plus loin)
+
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
-- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3)
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) <br>
 
 **Modules GPS supportés:**
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
+
+**Module optionel GSM supporté:**
+- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") coûtant quelques euros.<br>
+[Voir ici quelques remarques sur le module SIM800L](#SIM800L)
 
 Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour une antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
 Bien d’autres possibilités existent avec par exemple un ESP8266 D1, un GPS BN220 etc.
@@ -51,13 +62,17 @@ Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"
 Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.   
 L'interface utilisateur affiche l'identifiant de la balise qui devra être enregistré sur le site AlphaTango.
 
+## **SMS de localisation**
+Il est possible d'inclure dans la réalisation un module GSM permettant d'envoyer sur demande un SMS de localisation.
+Par défaut, si la balise reçoit un SMS elle répond par un SMS contenant un lien avec les dernières coordonnées GPS valides connues. Ce lien ouvre Google Maps avec un pointeur sur la position du modèle.
+Il est possible, par l'interface Web, de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
 
 ## **Environnement logiciel. Compilation**
 Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
-Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2022: ESP32 2.0.2, ESP8266 3.0.2)  
+Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Septembre 2022: ESP32 2.0.5, ESP8266 3.0.2)  
 Seule la librairie TinyGPS++ ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
 
-Avant de compiler il faut choisir quelques options dans le fichier **fs\_option.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
+Avant de compiler il faut choisir quelques options dans le fichier **fs\_options.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
 Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
 Le choix du type de processeur est fait  lors de la compilation en sélectionnant le bon type de carte dans l'IDE Arduino
 
@@ -73,7 +88,7 @@ Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la
 Les GPS qui utilisent les commandes style $PMTK251, $PMTK220, $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, …) peuvent sûrement être utilisés.
 
 ### **Utilisation d'un LED**
-Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_option.h)  son clignotement est rythmé par l'émission des trames d'identification. 
+Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_options.h)  son clignotement est rythmé par l'émission des trames d'identification. 
 - En absence de fix GPS: clignotement lent, période de 6 secondes.
 - Après un fix GPS: flash très rapide lors de l'envoi d'une trame. (le flash est un peu plus long si la balise est en mode économie d'énergie/mise en sommeil)
 
@@ -159,6 +174,20 @@ Pour une mise à jour, il suffit de sélectionner le fichier résultat de compil
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
   Un click sur un identifiant de balise ouvre une page contenant des détails sur les valeurs émises.   
   Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise hors tension /en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+  
+<a name="SIM800L">
+
+# Remarques sur le module GSM SIM800L  
+  <p>
+ <img src="/img/sim800L.jpg"  align="left"  width=500><img src="/img/IMG_20221016_145705.jpg" align="center"   width=400>
+  </p>  
+  
+C'est un module 2G, parfois très instable et ne pouvant se connecter au réseau. Dans ce cas, le LED émet des séries de flashs rapides. Le problème est en général résolu en soudant  un condensateur de 1000µF **directement** en parallèle sur le gros condensateur jaune visible sur la photo ou en le remplacant directement par un nouveau condensateur tantale SMS  6V 1000uF 108 boitier type C.  
+
+Il existe aussi sur le marché des modules incluant directement un condensateur de 1000µF (marqué 108 sur les photos), mais ils sont difficiles à trouver.  
+Quand le module est en contact avec le réseau cellulaire, le LED émet un flash toutes les 3 secondes.  
+ Une carte micro SIM est bien sûr nécessaire.(Un "simple" forfait 0€ / 2€ chez un opérateur français bien connu fait l'affaire ! ...)  
+
 
  <a name="scenario">
    
@@ -179,9 +208,11 @@ Scénario dutilisation:
 Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
  # Principales modifications
- - depuis 3.0
+- 4.0
+  - ajout option répondeur GSM/SMS
+  - gestion led "inversé"
+-  3.1
      - amélioration du système de portail captif (changement de l'adresse IP de la balise etc...)
      - cosmétique dans l'interface Web
- 
  
 Enjoy !:blush:

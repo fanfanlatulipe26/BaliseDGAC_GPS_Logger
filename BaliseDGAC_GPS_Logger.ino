@@ -1,8 +1,9 @@
+//  - voir pour utiliser les 2 uarts de l'esp8266
 
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
-// 08/2022 v3.1
+// 10/2022 v4.0b1
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
-//    (pins utilisées pour le GPS, option GPS, etc ...)
+//    (pins utilisées pour le GPS,le GSM, option GPS, etc ...)
 
 /*
     This program is free software: you can redistribute it and/or modify
@@ -19,7 +20,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /*------------------------------------------------------------------------------
-  03/2022   02/2021
+
   Author: FS
   Platforms: ESP8266 / ESP32 / ESP32-C3
   Language: C++/Arduino
@@ -33,7 +34,11 @@
   ------------------------------------------------------------------------------*/
 
 #ifdef ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+#pragma message "Compilation pour ESP32C3 !"
+#else
 #pragma message "Compilation pour ESP32 !"
+#endif
 #include <WiFi.h>
 #include "fs_WebServer.h"
 #elif defined(ESP8266)
@@ -58,12 +63,13 @@
 //#endif
 #include "fs_pagePROGMEM.h"
 
-#if defined(ESP32)
-#include <HardwareSerial.h>
-#pragma message "Utilisation de HardwareSerial !"
-#else
+
+#ifdef repondeurGSM
+#pragma message "Code GSM!"
+#include "fs_GSM.h"
+#if defined (ESP8266)
 #include <SoftwareSerial.h>
-#pragma message "Utilisation de SotfwareSerial !"
+#endif
 #endif
 
 extern pref preferences;
@@ -212,9 +218,11 @@ char cGPS;
 
 
 #if defined(ESP32)
-HardwareSerial serialGPS(1);
+HardwareSerial serialGPS(1);   // utilisation uart 1 pour GPS (uart 0 debug)
+#pragma message "Utilisation de HardwareSerial pour GPS !"
 #else
-SoftwareSerial serialGPS(GPS_RX_PIN, GPS_TX_PIN);
+SoftwareSerial serialGPS;  // pour ESP8266   softwareserial uniquement
+#pragma message "Utilisation de SoftwareSerial pour GPS !"
 #endif
 TinyGPSPlus gps;
 
@@ -415,10 +423,10 @@ static void EnvoiTrame(double lat_actu, double lon_actu, int16_t alt_actu, int16
   {
 #ifdef pinLed
     // Tant que le fix n'est pas fait, flash du led avec la periode des trame.
-    // Quand le fix est fiat, un flash rapide pour chaque trame.
+    // Quand le fix est fait, un flash rapide pour chaque trame.
     // Le flash est un peu plus long:brillant en mode économie d'énergie car il y a un certain delay pour endormir/reveiller le wifi
-    if (codeinfo == 9)digitalWrite(pinLed, HIGH);
-    else digitalWrite(pinLed, TRBcounter % 2);
+    if (codeinfo == 9)digitalWrite(abs(pinLed), pinLed > 0 ? HIGH : LOW);
+    else digitalWrite(abs(pinLed), TRBcounter % 2);
 #endif
     //On commence par renseigner le ssid du wifi dans la trame
     // write new SSID into beacon frame
@@ -443,7 +451,7 @@ static void EnvoiTrame(double lat_actu, double lon_actu, int16_t alt_actu, int16
 #endif
     //dump une seule fois d'une trame Beacon ...
     if (millis() < 9000) {
-      Serial.println("Trame typique:");
+      Serial.println(F("Trame typique:"));
       dumpTrame(beaconPacket, to_send);
     }
 
@@ -477,11 +485,11 @@ static void EnvoiTrame(double lat_actu, double lon_actu, int16_t alt_actu, int16
       Serial.printf_P(PSTR("\tSendpkt :%i  %i  %f"), statSendPkt.min, statSendPkt.max, statSendPkt.moyenneLocale);
       Serial.printf_P(PSTR("\tEndormir :%i  %i  %f\n"), statEndormir.min, statEndormir.max, statEndormir.moyenneLocale);
       dbgHeap("fin");
-     
+
     }
 #endif
 #ifdef pinLed
-    if (codeinfo == 9) digitalWrite(pinLed, LOW);
+    if (codeinfo == 9) digitalWrite(abs(pinLed), pinLed > 0 ? LOW : HIGH);
 #endif
   }
 }
@@ -489,10 +497,9 @@ static void EnvoiTrame(double lat_actu, double lon_actu, int16_t alt_actu, int16
 void setup()
 {
 #ifdef pinLed
-  pinMode(pinLed, OUTPUT);
+  pinMode(abs(pinLed), OUTPUT);
 #endif
   Serial.begin(115200);
-  //delay(2000);
   Serial.print(F("\n\nBalise v")); Serial.print(versionSoft);
   Serial.println(F("  " __DATE__ " " __TIME__));
   Serial.print(F("GPS: "));
@@ -514,7 +521,7 @@ void setup()
 #if defined(ESP32)
   serialGPS.begin(9600, SERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN );
 #else
-  serialGPS.begin(9600);
+  serialGPS.begin(9600, SWSERIAL_8N1, GPS_RX_PIN, GPS_TX_PIN );
   if (!serialGPS) { // If the object did not initialize, then its configuration is invalid
     Serial.println(F("Invalid SoftwareSerial pin configuration, check config"));
     while (1) { // Don't continue with invalid configuration
@@ -541,14 +548,16 @@ void setup()
   //transfert dans la variable globale ssid
   temp.toCharArray(ssid, 32);
   if (strlen(preferences.ssid_AP) != 0 ) strcpy (ssid, preferences.ssid_AP);
-  else strcpy (preferences.ssid_AP, ssid); 
+  else strcpy (preferences.ssid_AP, ssid);
+
+  delay(200);
+  Serial.print(F("Setting soft-AP configuration ... "));
+  Serial.println(WiFi.softAPConfig(local_ip, gateway, subnet) ? F("Ready") : F("Failed!"));
+  delay(200);
   Serial.print(F("Setting soft-AP ... "));
   // ssid, pwd, channel, hidden, max_cnx
   Serial.println(WiFi.softAP(ssid, preferences.password, 6, false, 4) ? F("Ready") : F("Failed!"));  // 4 clients permis
   // Serial.println(WiFi.softAP(ssid, preferences.password, 6, false, 1) ? F("Ready") : F("Failed!")); // 1 client permis
-  delay(200);
-  Serial.print(F("Setting soft-AP configuration ... "));
-  Serial.println(WiFi.softAPConfig(local_ip, gateway, subnet) ? F("Ready") : F("Failed!"));
   delay(200);
   Serial.print(F("IP address for AP network "));
   Serial.print(ssid);
@@ -560,6 +569,9 @@ void setup()
   fs_initGPS(preferences.baud, preferences.hz);  // init du GPS (vitesse, refresh) et serialGPS
   drone_idfr.set_drone_id(drone_id);
 
+#ifdef repondeurGSM
+  GSMInit();
+#endif
 #ifdef fs_STAT
   razStatistics();
 #endif
@@ -570,6 +582,9 @@ void setup()
 
 void loop()
 {
+#if defined(repondeurGSM)
+  GSMCheck();
+#endif
 #ifdef fs_RECEPTEUR
   if (modeRecepteur)
   {
