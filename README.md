@@ -1,14 +1,14 @@
 
 # **BaliseDGAC\_GPS\_Logger V4.0b1  Emetteur/Récepteur/Tracker GSM**
 
-Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionellement un module GSM permettant de recevoir un SMS de localisation.
+Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation.
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
 
 |   <img src="/img/bal1.jpg" width="400"> | <img src="/img/bal2.jpg" width="400">  |
 | ------------ | ------------ |
-|Balise réalisée avec un module ESP32-C3 T-01C3. Poids: 11g|  [Quelques photos de la réalisations](/realisation.md)|  
+|Balise réalisée avec un module ESP32-C3 T-01C3. Poids: 11g|  [Quelques photos de la réalisation](/realisation.md)|  
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drones et aéromodèles est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
@@ -31,7 +31,7 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 
 <img src="/img/schéma_2_schéma_1.jpg" width="600">  
 Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
-Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définies dans le fichier fs_options.h (voir plus loin)
+Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définis dans le fichier fs_options.h (voir plus loin)
 
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
@@ -44,7 +44,7 @@ Les noms des pins sur le module processeur ESP correspondent aux noms des pins q
 - Beitian BN-220, BN-180, BN-880 (et GPS style base chipset: u-blox M8030-KT ??)  
 
 **Module optionel GSM supporté:**
-- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") countant quelques Euro.<br>
+- La réalisation a été faite avec un mini module **GSM SIM800L** (module "rouge") coûtant quelques euros.<br>
 [Voir ici quelques remarques sur le module SIM800L](#SIM800L)
 
 Le choix d'un module  **LILYGO® TTGO T-01C3 ESP32-C3** ayant les mêmes dimensions et brochage qu'un ESP01 mais basé sur un ESP32-C3  permet une réalisation compacte et performante. Par rapport à un ESP01 classique, ce module dispose de plus de mémoire (4MB), de plus de puissance de traitement, d'un LED indépendant, d'une entrée/sortie supplémentaire, d'un connecteur pour une antenne externe optionnelle, etc.… Il semble aussi moins sensible aux problèmes d'alimentation que le module ESP01/ESP8266.  
@@ -65,7 +65,7 @@ L'interface utilisateur affiche l'identifiant de la balise qui devra être enreg
 ## **SMS de localisation**
 Il est possible d'inclure dans la réalisation un module GSM permettant d'envoyer sur demande un SMS de localisation.
 Par défaut, si la balise reçoit un SMS elle répond par un SMS contenant un lien avec les dernières coordonnées GPS valides connues. Ce lien ouvre Google Maps avec un pointeur sur la position du modèle.
-Il est possible par l'interface Web de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
+Il est possible, par l'interface Web, de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
 
 ## **Environnement logiciel. Compilation**
 Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
