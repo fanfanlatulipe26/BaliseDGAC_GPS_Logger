@@ -412,7 +412,7 @@ void AsyncSMS::parseSMS() {
     smsReceived(senderNumber, message);
 }
 
-void AsyncSMS::log(char *msg) {
+void AsyncSMS::log(const char *msg) {  // FS +++   const added
   if (logger)
     logger(msg);
 }
@@ -435,4 +435,5 @@ uint16_t AsyncSMS::findLineBreak(char *msg, uint16_t len) {
       return i + 2;
     }
   }
+  return 0;
 }

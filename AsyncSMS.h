@@ -100,7 +100,7 @@ class AsyncSMS
 
     uint16_t findLineBreak(char *_msg, uint16_t len);
 
-    void log(char *msg);
+    void log(const char *msg);  // FS +++   const added
     void log(String msg);
   public:
     char myPhoneNumber[PHONE_NUMBER_LEN]="unknown nbr";  // FS +++++++++++++++++++++++++++++

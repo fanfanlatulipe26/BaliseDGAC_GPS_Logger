@@ -32,8 +32,8 @@
 //--------------------------------------------------------------------------------------------------------
 //  Options logiciel. 
 #define fs_OTA        // pour permettre une mise a jour OTA pour logiciel 
-#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
-#define repondeurGSM  // pour envoyer dans un SMS la position avec une module GSM SIM800L (uniquement pour une carte à base ESP32 / ESP32C3)
+//#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
+//#define repondeurGSM  // pour envoyer dans un SMS la position avec une module GSM SIM800L (uniquement pour une carte à base ESP32 / ESP32C3)
 //#define fs_STAT     // pour avoir une page de statisques,durée exécution, erreurs GPS, etc ...Utile en phase développement ..
 
 //--------------------------------------------------------------------------------------------------------
@@ -55,9 +55,11 @@
 
 //--------------------------------------------------------------------------------------------------------
 // Pour 8266 ESP8266 D1 MINI Pro 
+
+#define GPS_RX_PIN 5 // sur pin 5, label D1, brancher le fil Tx du GPS .
+#define GPS_TX_PIN 4 // sur pin 4, label D2, brancher le fil Rx du GPS .(pour envoyer des commandes )
+
 /*
-#define GPS_RX_PIN 4           // sur pin 4, label D2, brancher le fil Tx du GPS .
-#define GPS_TX_PIN 5            // sur pin 5, label D1, brancher le fil Rx du GPS .(pour envoyer des commande )
 #define GSM_RX 16   // sur pin 16, label D0, vers RX du module GSM SIM800L
 #define GSM_TX 14   // sur pin 14, label D5, vers TX du module GSM SIM800L
 //#define pinFactoryReset 2 
@@ -79,7 +81,7 @@
 */
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour module  ESP3-C3-32S-kit  NodeMCU-Series
-
+/*
 #define GPS_RX_PIN 9             // D1 Brancher le fil Tx du GPS . 
 #define GPS_TX_PIN 10            // D2 Brancher le fil Rx du GPS . 
 #define GSM_RX 19   // vers RX du module GSM SIM800L

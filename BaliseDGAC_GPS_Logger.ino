@@ -1,6 +1,9 @@
 //  - voir pour utiliser les 2 uarts de l'esp8266
 
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
+// 6/2023 v4.0b2
+//    -modif AsyncSMS pour enlever des warning / erreur avec nouvelles versions de compilateurs
+//    -pb include SoftwareSerial.h esp8266
 // 10/2022 v4.0b1
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
 //    (pins utilisées pour le GPS,le GSM, option GPS, etc ...)
@@ -67,9 +70,9 @@
 #ifdef repondeurGSM
 #pragma message "Code GSM!"
 #include "fs_GSM.h"
+#endif
 #if defined (ESP8266)
 #include <SoftwareSerial.h>
-#endif
 #endif
 
 extern pref preferences;
