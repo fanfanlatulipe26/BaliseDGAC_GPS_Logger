@@ -213,7 +213,7 @@ Les traces GPS enregistrées permettent de retrouver un historique des essais.
   - suppression de warning
   - correction problèmes include SoftwareSerial pour ESP8266
   - correction descriptions exemples de RX/TX pin pour module ESP8266 D1
-- 4.0
+- 4.0b1
   - ajout option répondeur GSM/SMS
   - gestion led "inversé"
 -  3.1
