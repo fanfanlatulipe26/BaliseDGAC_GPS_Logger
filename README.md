@@ -1,5 +1,5 @@
 
-# **BaliseDGAC\_GPS\_Logger V4.0b2  Emetteur/Récepteur/Tracker GSM**
+# **BaliseDGAC\_GPS\_Logger V4.0 Emetteur/Récepteur/Tracker GSM**
 
 Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation.
 La balise a deux modes de fonctionnement:
@@ -208,6 +208,7 @@ Scénario dutilisation:
 Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
  # Principales modifications
+- 4.0 final. Pas de changements
 - 4.0b2
   - suppression de warning
   - correction problèmes include SoftwareSerial pour ESP8266
