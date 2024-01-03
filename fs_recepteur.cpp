@@ -135,9 +135,9 @@ void handleRecepteurDetail()
   page += "<p><b>Balise " +  String(lesBalises[numBaliseDetail].identifiant) + "</b></p>";
   
   page += "<table><tr><td colspan=2><b>Position de départ</b></td>";
-  page += "<tr><td>Latitude: " + String(lesBalises[numBaliseDetail].latHome) + "</td><td>Longitude:" + String(lesBalises[numBaliseDetail].lonHome);
+  page += "<tr><td>Latitude: " + String(lesBalises[numBaliseDetail].latHome,6) + "</td><td>Longitude:" + String(lesBalises[numBaliseDetail].lonHome,6);
   page += "</td></tr>\n<tr><td colspan=2><b>Dernière position connue</b></td>";
-  page += "<tr><td>Latitude: " + String(lesBalises[numBaliseDetail].lat) + "</td><td>Longitude: " + String(lesBalises[numBaliseDetail].lon);
+  page += "<tr><td>Latitude: " + String(lesBalises[numBaliseDetail].lat,6) + "</td><td>Longitude: " + String(lesBalises[numBaliseDetail].lon,6);
   page += "</td></tr>\n<tr><td>Altitude: " + String(lesBalises[numBaliseDetail].alt) + "</td><td>Hauteur: " + String(lesBalises[numBaliseDetail].haut);
   page += "</td></tr>\n<tr><td>Vitesse: " + String(lesBalises[numBaliseDetail].vitesse) + "</td><td>Direction: " + String(lesBalises[numBaliseDetail].route);
   page += "</td></tr>\n<tr><td>RSSI: " + String(lesBalises[numBaliseDetail].rssi) + "</td><td>Age(sec): " + String(lesBalises[numBaliseDetail].age);
@@ -361,7 +361,7 @@ static void initialize_wifi_sniffer()
 hw_timer_t *timer = NULL;
 bool timerOccurs = false;
 
-void IRAM_ATTR onTimer() {
+void IRAM_ATTR onTimerRx() {
   timerOccurs = true;
 }
 void handleRecepteur()
@@ -373,7 +373,7 @@ void handleRecepteur()
   modeRecepteur = true;
   initialize_wifi_sniffer();
   timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &onTimer, true);
+  timerAttachInterrupt(timer, &onTimerRx, true);
   timerAlarmWrite(timer, 1000000, true);
   timerAlarmEnable(timer);
   Serial.println(F("En attente de trames..."));
