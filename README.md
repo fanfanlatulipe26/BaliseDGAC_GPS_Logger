@@ -1,3 +1,8 @@
+# **Travail 4.2**
+Possibilité de changer l'identificateur de la balise par l'interface Web
+Ajout option pour telemetrie iBus (dans fs_options.h 
+
+Ce README n'est pas à jour ....
 
 # **BaliseDGAC\_GPS\_Logger V4.0 Emetteur/Récepteur/Tracker GSM**
 
