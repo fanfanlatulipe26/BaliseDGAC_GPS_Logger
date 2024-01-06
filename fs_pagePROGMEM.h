@@ -117,6 +117,12 @@ font-family:inherit;
 border:5px solid  black ;
 border-radius:10px;
 }
+hr{
+height:4px;
+border-width:0;
+color:gray;
+background-color:gray
+}
 table{
 margin:auto;
 }
@@ -146,7 +152,11 @@ background-color:#4CAF50;
 input[type=submit]{
 background-color:DarkGray;
 }
-
+input[type=text] {
+ font-family:"Courier New", Courier, monospace;
+ font-size: 100%;
+ font-weight: bold;
+}
 </style>
 <script>
 function D1(){return confirm("Effacer ce fichier ?");}
@@ -262,11 +272,13 @@ Basse consommation après coupure?
 <input type="radio" class = "checkedRed" id="nonConso" name="conso" value="Non">
 <label for="nonConso">Non</label><br> 
 <p>
-<label for="password">Mot de passe</label>
+<label for="password">Mot de passe (vide: réseau ouvert)</label>
 <input type="text" id="password" name="password" size ="8" minlength="8"  maxlength="8" value="">
 <br>
-<label for="ssid_AP">Nom du réseau</label>
-<input type="text" id="ssid_AP" name="ssid_AP" pattern="[0-9a-zA-Z:_-]*" size ="35" minlength="1"  maxlength="32" value="">
+<label for="ssid_AP">Nom du réseau (vide: valeur par défaut)</label>
+<input type="text" id="ssid_AP" name="ssid_AP" pattern="[0-9a-zA-Z:_\-]*" title="32 caractères maximum, 0-9a-zA-Z:_ et -"
+size ="32" minlength="1"  maxlength="32" value="">
+<br><span class="b3">(Faire reset / redémarrage pour prise en compte)</span>
 </form>
 )====="
 #ifdef repondeurGSM
@@ -282,8 +294,17 @@ R"=====(
 )====="
 #endif
 R"=====(
+<form action="/droneIDProcess">
+<hr><b>Gestion de l'identificateur de la balise</b><input style="float: right;" type="submit" value="Envoyer">
+<p>
+<label for="drone_id">Identificateur 24 caractères max (vide: valeur par défaut)</label>
+<br>
+<input type="text" id="drone_idHead" name="drone_idHead"  size ="6" value="" disabled>
+<input type="text" id="drone_id" name="drone_id" pattern="[^ ]*" title="24 caractères maximum, pas d'espace"
+size ="24" minlength="1"  maxlength="24" value="">
+</form>
 <form action="/resetUsine">
-<hr><input style="float: right;" type="submit" value="Restauration des valeurs par défaut">
+<hr><input style="float: right;" type="submit" value="Restauration de toutes les valeurs par défaut">
 <p>&nbsp
 </form>
 </div>

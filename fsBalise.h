@@ -22,43 +22,49 @@
 
 #include <TinyGPS++.h>
 
-const char versionSoft[] = "4.0";
+const char versionSoft[] = "4.1b1";
 #define DEBUG_HEAP false
+//#define DEBUG_HEAP true
 #ifndef ESP32
 #define dbgHeap(mes) \
   do { if (DEBUG_HEAP) Serial.printf_P(PSTR("%s %s():%d  FreeContStack: %5d  free: %5d - max: %5d - frag: %3d%% \n "),\
-                                         mes, __func__, __LINE__,ESP.getFreeContStack(),\
-                                         ESP.getFreeHeap(), ESP.getMaxFreeBlockSize(),\
-                                         ESP.getHeapFragmentation());} while (0)
+                                           mes, __func__, __LINE__,ESP.getFreeContStack(),\
+                                           ESP.getFreeHeap(), ESP.getMaxFreeBlockSize(),\
+                                           ESP.getHeapFragmentation());} while (0)
 #else
 #define dbgHeap(mes) \
   do { if (DEBUG_HEAP) Serial.printf_P(PSTR("%s %s():%d free: %5d \n "),\
-                                         mes, __func__, __LINE__,\
-                                         ESP.getFreeHeap());} while (0)
+                                           mes, __func__, __LINE__,\
+                                           ESP.getFreeHeap());} while (0)
 #endif
 
 // voir pour adresse DNS 8.8.8.8 FS https://github.com/espressif/arduino-esp32/issues/1037
 //  pour Android ??
 //enum { traceNone, traceGPX, traceCSV };
 struct pref { // preferences sauvées en EEPROM
-  char signature[6] = "ddf";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
- //  char signature[6] = "ablfs";  // balfs  signature d'une EEPROM balise. Ne pas toucher
+  char signature[6] = "ddg";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
+  //  char signature[6] = "ablfs";  // balfs  signature d'une EEPROM balise. Ne pas toucher
   char password[9] = ""; //  Par défaut le réseau créé est ouvert
   char SMSCommand[9] = ""; //  Par défaut on met toujours les coordonnées dans le SMS envoyé
   char ssid_AP[33] = ""; // Par défaut le ssid du point d'accés crée sera basé sur l'adresse MAC
-//   valeurs de l'exemple CaptivePortal
+  // Ne pas toucher drone_id !!
+  char drone_id[31] = "000FSB000000000000YYYYYYYYYYYY"; // les YY seront remplacés par l'adresse MAC, sans les ":"
+  //  000   trigramme constructeur "amateur"
+  //  FSB   mon modèle de balise
+  //  24 octets pour l'identificateur
+  //   valeurs de l'exemple CaptivePortal
   char local_ip[16] = "8.8.4.4"; // The default android DNS
   char gateway[16] = "8.8.4.4" ;
   char subnet[16] = "255.255.255.0";
-  
+
   int timeoutWifi = 45;  // delais deconnection AP wifi
   int logAfter = 5 ;   // enregistrement d'un point si déplacement de 5m  (si <0, enregistrement après n millis sec)
-  int baud = 9600;  // vitesse de transmission avec le GPS   19200 ((OK avec ESP8266), 38400 
+  int baud = 9600;  // vitesse de transmission avec le GPS   19200 ((OK avec ESP8266), 38400
   int nbrMaxTraces = 10; // nobre maximal de traces à conserver
   byte hz = 1;  //  taux de rafraichissement du GPS
   char formatTrace[4] = "csv";  //  csv gpx
   bool logOn = true;  // true: on enregistre; false: pas de trace enregistrée
-  bool logToujours= true;  // enregistrerla trace même si on ne se déplace pas
+  bool logToujours = true; // enregistrerla trace même si on ne se déplace pas
   bool logVitesse = false;
   bool logAltitude = true;
   bool logHeure = true;
@@ -112,6 +118,7 @@ void handleOptionPointAccesProcess();
 void handleOptionSMSCommand();
 void handleOptionsPreferences();
 void handleResetUsine();
+void handleDroneID();
 void handleReset();
 void handleFavicon();
 void handle_generate_204();
