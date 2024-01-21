@@ -1,8 +1,20 @@
 # **Travail 4.2**
-Possibilité de changer l'identificateur de la balise par l'interface Web
-Ajout option pour telemetrie iBus (dans fs_options.h 
-
+Rapide mise à jour ...
 Ce README n'est pas à jour ....
+
+- Possibilité de changer l’identificateur de la balise dans la page "Préférences" de l’interface Web.
+
+- Ajout d'une option pour telemetrie FlySky iBus (dans fs_options.h ). En partie testé sur ESP32 et ESP32C3
+
+Utilise la librairie IBusBM.h (disponible par le gestionnaire de bibliothèques de l’IDE) 
+
+Attention : il faut rajouter une diode la sortie du récepteur RC et les pins Arduino  (voir https://github.com/bmellink/IBusBM ) 
+
+Avec un ESP32C3, l’utilisation de l’option télémétrie ou GSM condamne l’utilisation de la console IDE . Le logiciel peut être chargé par OTA.
+
+
+- Code général de la balise testé en partie sur ESP32S3  (partie Wifi .)
+
 
 # **BaliseDGAC\_GPS\_Logger V4.0 Emetteur/Récepteur/Tracker GSM**
 
