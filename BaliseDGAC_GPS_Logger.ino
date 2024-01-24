@@ -1,10 +1,25 @@
-//  - voir pour utiliser les 2 uarts de l'esp8266
-
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
+// 4.1b1 : rajout modif du drone_id
+// 4.1b0 : rajout telemetrie GPS ibus FlySky
 // 6/2023 v4.0b2
 //    -modif AsyncSMS pour enlever des warning / erreur avec nouvelles versions de compilateurs
 //    -pb include SoftwareSerial.h esp8266
 // 10/2022 v4.0b1
+
+// Pending pour télémesure :
+//  - ne retrouve pas bien le GPS ??. Quid quand pas de trafic GPS ??
+//     Refaire un init vitesse & Co ??
+//  - semble OK avec mini ESP32C3
+//  - essais sans timer pour iBus et etude stats.
+//      l'enregistrement de la trace ralenti la telemesure mais ne la casse ps.
+//  - crash si on utilise le timer 0 pour iBusBM  si initialisation avant init du wifi
+//      .. Ok sans timer avec appel de loop
+//      Ok si init iBus apres Wifi & Co, avec timer 0
+//  - attention lecture gps.xx dans iBus qui change les flags updated ???????????
+//  - ne pas envoyer de données GPS si les données ne sont pas valides ??.
+//  - Voir ce qu'il se passe dans la télémétrie si le fix est perdu ??
+//  - voir pour utiliser les 2 uarts de l'esp8266
+
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
 //    (pins utilisées pour le GPS,le GSM, option GPS, etc ...)
 
@@ -66,6 +81,7 @@
 //#endif
 #include "fs_pagePROGMEM.h"
 
+#include "fs_telemetrie.h"
 
 #ifdef repondeurGSM
 #pragma message "Code GSM!"
@@ -76,6 +92,7 @@
 #endif
 
 extern pref preferences;
+extern pref factoryPrefs;
 //extern const char statistics[] PROGMEM ;
 extern File traceFile;
 
@@ -222,7 +239,7 @@ char cGPS;
 
 #if defined(ESP32)
 HardwareSerial serialGPS(1);   // utilisation uart 1 pour GPS (uart 0 debug)
-#pragma message "Utilisation de HardwareSerial pour GPS !"
+#pragma message "Utilisation de HardwareSerial 1 pour GPS !"
 #else
 SoftwareSerial serialGPS;  // pour ESP8266   softwareserial uniquement
 #pragma message "Utilisation de SoftwareSerial pour GPS !"
@@ -289,7 +306,7 @@ void handleReadValues() {
   int deb = 0;
   countdownRunning = true; //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   deb += sprintf_P(&buf[deb], PSTR("1$Balise v%s;"), versionSoft);
-  deb += sprintf_P(&buf[deb], PSTR("2$ID: %s;"), drone_id);
+  deb += sprintf_P(&buf[deb], PSTR("2$ID: %s;"), preferences.drone_id);
   if (messAlarm != "")  deb += sprintf_P(&buf[deb], PSTR("3$%s;"), messAlarm.c_str());
   else {
     deb += sprintf_P(&buf[deb], PSTR("3$Mode basse consommation "));
@@ -499,6 +516,10 @@ static void EnvoiTrame(double lat_actu, double lon_actu, int16_t alt_actu, int16
 
 void setup()
 {
+  //#if defined(fs_iBus)
+  //  iBusInit();
+  //#endif
+
 #ifdef pinLed
   pinMode(abs(pinLed), OUTPUT);
 #endif
@@ -515,9 +536,26 @@ void setup()
 #endif
   Serial.printf_P(PSTR("Pin %i sur RX du GPS\nPin %i sur TX du GPS\n"), GPS_TX_PIN, GPS_RX_PIN);
 
+  // calcul des valeurs par defaut de l'identificateur de la balise et du nom du réseau point d'acces Wifi
+  // Ces noms sont basés sur l'adresse MAC mais peuvent être changé par l'utilisateur.
+
+  //conversion de l'adresse mac:
+  String temp = WiFi.macAddress();
+  temp.replace(":", ""); //on récupère les 12 caractères après illimination des ":"
+  strcpy(&drone_id[18], temp.c_str()); // que on met à la fin du drone_id
+  strcpy(factoryPrefs.drone_id, drone_id);
+  Serial.print(F("Drone_id par defaut:")); Serial.println(factoryPrefs.drone_id);
+  // Calcul du ssid_AP par defaut:
+  temp = WiFi.macAddress();
+  //concat du prefixe et de l'adresse mac complète avec les ":"
+  temp = String(prefixe_ssid) + "_" + temp;
+  temp.toCharArray(factoryPrefs.ssid_AP, 32);
+  Serial.print(F("ssid_AP par defaut:")); Serial.println(factoryPrefs.ssid_AP);
+
+
   EEPROM.begin(512);
   checkFactoryReset();
-  readPreferences();
+  readPreferences();   // au 1er run avec mismatch de la signature EEPROM on utilisera factoryPrefs pour tout initialiser
   Serial.println(F("Prefs lues dans EEPROM:"));
   listPreferences();
   // init liaison GPS. Cette vitesse sera changée en fait lors de la configuration du GPS
@@ -540,18 +578,10 @@ void setup()
   //connection sur le terrain à un smartphone
   // start WiFi
   WiFi.mode(WIFI_AP);
-  //conversion de l'adresse mac:
-  String temp = WiFi.macAddress();
-  temp.replace(":", ""); //on récupère les 12 caractères
-  strcpy(&drone_id[18], temp.c_str()); // que on met à la fin du drone_id
-  Serial.print(F("Drone_id:")), Serial.println(drone_id);
-  temp = WiFi.macAddress();
-  //concat du prefixe et de l'adresse mac
-  temp = String(prefixe_ssid) + "_" + temp;
-  //transfert dans la variable globale ssid
-  temp.toCharArray(ssid, 32);
-  if (strlen(preferences.ssid_AP) != 0 ) strcpy (ssid, preferences.ssid_AP);
-  else strcpy (preferences.ssid_AP, ssid);
+  strcpy(drone_id, preferences.drone_id);
+  Serial.print(F("Drone_id trouvé dans preferences:")), Serial.println(drone_id);
+  strcpy (ssid, preferences.ssid_AP);
+  Serial.print(F("ssid_AP trouvé dans preferences:")); Serial.println(ssid);
 
   delay(200);
   Serial.print(F("Setting soft-AP configuration ... "));
@@ -570,11 +600,16 @@ void setup()
   beginServer(); //lancement du server WEB, DNS, file system
   delay(1200); // le GPS QUECTEL met environ 1.1s pour être pret après un power up et ne reçoit pas les commandes avant. Ubloxd : environ 600ms
   fs_initGPS(preferences.baud, preferences.hz);  // init du GPS (vitesse, refresh) et serialGPS
-  drone_idfr.set_drone_id(drone_id);
+  drone_idfr.set_drone_id(preferences.drone_id);
 
 #ifdef repondeurGSM
   GSMInit();
 #endif
+
+#if defined(fs_iBus)
+  iBusInit();
+#endif
+
 #ifdef fs_STAT
   razStatistics();
 #endif
@@ -585,6 +620,10 @@ void setup()
 
 void loop()
 {
+#if defined(fs_iBus)
+  iBusLoop();
+  iBusSetValue(gps);
+#endif
 #if defined(repondeurGSM)
   GSMCheck();
 #endif
