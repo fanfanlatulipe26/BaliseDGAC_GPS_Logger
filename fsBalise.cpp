@@ -25,7 +25,6 @@
 #include "AsyncSMS.h"
 #include <LittleFS.h>
 #include <EEPROM.h>
-#include "droneID_FR.h"
 #ifdef ESP32
 #include <Update.h>
 extern fs_WebServer server;
@@ -40,7 +39,6 @@ extern String messAlarm;
 extern float VmaxSegment, AltMaxSegment;
 extern unsigned long TimeShutdown;
 extern boolean countdownRunning;
-extern droneIDFR drone_idfr;
 #ifdef fs_STAT
 extern statBloc_t  statNotFound , statCockpit ;
 #endif
@@ -49,7 +47,7 @@ extern TinyGPSPlus gps;
 struct pref preferences;
 struct pref factoryPrefs;
 
-//  Ne pas utiliser delay(xxx) car celà cause des problème sur ESP32-C3 avec espsoftwareserial/getCycleCount
+//  Ne pas utiliser delay(xxx) car celà cause des problème sur ESP32-C3 avec espsoftwareserial/getCycleCount 
 //  Voir https://github.com/espressif/arduino-esp32/issues/6920
 // Attention: pour ESP8266 il faut un delay "standard"  ....
 
@@ -581,8 +579,8 @@ void handleGestionSpiff() {
 }
 
 // Panic !: on restaure la conf avec la conf par defaut
-// L'appel à checkFactoryReset est fait dès le début, alors que la structure contient encore les valeurs par
-//  defaut définies dans fs_balise.h.
+// L'appel à checkFactoryReset est fait dès le début, alors que la structure contient encore les valeurs par 
+//  defaut définies dans fs_balise.h. 
 void checkFactoryReset() {
 #ifdef pinFactoryReset
   pinMode(pinFactoryReset, INPUT_PULLUP);
@@ -616,7 +614,6 @@ void savePreferences() {
 void listPreferences() {
   Serial.print(F("password : ")); Serial.println(preferences.password);
   Serial.print(F("ssid_AP : ")); Serial.println(preferences.ssid_AP);
-  Serial.print(F("drone_id : ")); Serial.println(preferences.drone_id);
   Serial.print(F("SMSCommand : ")); Serial.println(preferences.SMSCommand);
   Serial.print(F("logOn : ")); Serial.println(preferences.logOn ? "TRUE" : "FALSE");
   Serial.print(F("logToujours : ")); Serial.println(preferences.logToujours ? "TRUE" : "FALSE");
@@ -658,7 +655,7 @@ void handleOptionLogProcess() {
   preferences.nbrMaxTraces = (int)std::strtol(server.arg("nbrMaxTraces").c_str(), nullptr, 10);
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
-  displayOptionsSysteme("Préferences de gestion de la trace mises à jour.");
+  displayOptionsSysteme("Préferences mises à jour.");
 }
 
 void handleOptionGPSProcess() {
@@ -677,7 +674,7 @@ void handleOptionGPSProcess() {
   }
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
-  displayOptionsSysteme("Préferences de gestion du GPS mises à jour.");
+  displayOptionsSysteme("Préferences mises à jour.");
   if (restartGps)  fs_initGPS(preferences.baud, preferences.hz);
 }
 
@@ -688,32 +685,16 @@ void handleOptionPointAccesProcess() {
   preferences.basseConso = (server.arg("conso") == "Oui");
   server.arg("password").toCharArray(preferences.password, 9); //   forcer à 8  ??     init ""  ????????????
   server.arg("ssid_AP").toCharArray(preferences.ssid_AP, 33); //    init ""
-  if (strlen(preferences.ssid_AP) == 0) strcpy(preferences.ssid_AP, factoryPrefs.ssid_AP);
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
-  displayOptionsSysteme("Préferences de gestion du point d'accès Wifi mises à jour.");
+  displayOptionsSysteme("Préferences mises à jour.");
 }
 
 void handleOptionSMSCommand() {
   server.arg("SMSCommand").toCharArray(preferences.SMSCommand, 9); //   forcer à 8  ??     init ""  ????????????
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
-  displayOptionsSysteme("Préferences de gestion de l'envoi d'un SMS mises à jour.");
-}
-
-void handleDroneID() {
-  // left padding sur 24 caractères avec "0"
-  for (int i = 6 ; i < strlen (preferences.drone_id)  ; i++) preferences.drone_id[i] = '0';
-  int drone_idLength = server.arg("drone_id").length();
-  if (drone_idLength == 0) { // si on a donné un champ vide, on reinitialise à la valeur canonique par defaut
-    strcpy(preferences.drone_id, factoryPrefs.drone_id);
-  } else {
-    server.arg("drone_id").toCharArray(&preferences.drone_id[24 + 6 - drone_idLength], drone_idLength + 1);
-  }
-  savePreferences();
-  listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
-  drone_idfr.set_drone_id(preferences.drone_id);
-  displayOptionsSysteme("Préferences de gestion de l'identificateur de la balise mises à jour.");
+  displayOptionsSysteme("Préferences mises à jour.");
 }
 
 
@@ -721,12 +702,10 @@ void handleOptionsPreferences() {
   server.sendContent_P(pageOption);
   String message = "<script>gel('password').value = '" + String(preferences.password) + "'";
   message += "; gel('ssid_AP').value = '" + String(preferences.ssid_AP) + "'";
-  message += "; gel('drone_idHead').value = '" + String(preferences.drone_id).substring(0, 6) + "'";
-  message += "; gel('drone_id').value = '" + String(preferences.drone_id).substring(6) + "'";
-#ifdef repondeurGSM
+  #ifdef repondeurGSM
   message += "; gel('SMSCommand').value = '" + String(preferences.SMSCommand) + "'";
-  message += "; gel('myPhoneNumber').innerHTML = '" + String ( smsHelper.myPhoneNumber) + "'";
-#endif
+  message += "; gel('myPhoneNumber').innerHTML = '" + String ( smsHelper.myPhoneNumber) +"'";
+  #endif
   //  message += "; gel('local_ip').value = '" + String(preferences.local_ip) + "'";
   //  message += "; gel('gateway').value = '" + String(preferences.gateway) + "'";
   //  message += "; gel('subnet').value = '" + String(preferences.subnet) + "'";
@@ -774,13 +753,14 @@ void handleReset() {
 }
 
 void handleFavicon() {
- // Serial.print(F("Favicon ")); Serial.println(sizeof(favicon));
+  Serial.print(F("Favicon ")); Serial.println(sizeof(favicon));
   server.send_P(200, "image/x-icon", favicon, sizeof(favicon));
+  //  server.send_P(200, "image/x-icon", favicon);
 }
 // pour captive portal Android. Voir https://gitlab.com/defcronyke/wifi-captive-portal-esp-idf
 void handle_generate_204() {
- // Serial.print(F("generate_204 ")); Serial.print (server.hostHeader()); Serial.print("  ");
- // Serial.println (server.uri());
+  Serial.print(F("generate_204 ")); Serial.print (server.hostHeader()); Serial.print("  ");
+  Serial.println (server.uri());
   // on fait une redirection. Cela change url dans la barre adresse du navigateur. Plus joli !!
   server.sendHeader("Location", String("http://majoliebalise.fr"), true);
   server.send ( 302, "text/plain", "Found");
@@ -808,7 +788,6 @@ void fs_initServerOn( ) {
 #ifdef repondeurGSM
   server.on("/optionSMSCommand", handleOptionSMSCommand);
 #endif
-  server.on("/droneIDProcess", handleDroneID);
   server.on("/resetUsine", handleResetUsine);
   server.on("/reset", handleReset);
 #ifdef fs_STAT
@@ -829,7 +808,7 @@ void fs_initServerOn( ) {
 void displayOptionsSysteme(String sms) {
   sendChunkDebut ( true );  // debut HTML style, avec topMenu
   server.sendContent_P(menuSysteme);
-  server.sendContent("<div class='card gauche'><span class='b3'>" + sms + "</span><hr></div>");
+  server.sendContent("<div class='card gauche'>" + sms + "</div>");
   handleOptionsPreferences();
   server.chunkedResponseFinalize();
 }
