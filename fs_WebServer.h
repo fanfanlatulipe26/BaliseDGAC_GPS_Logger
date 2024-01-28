@@ -25,8 +25,8 @@
 class fs_WebServer : public WebServer
 {
   public:
-    fs_WebServer(int port = 80): WebServer(port) {
-    }
+    fs_WebServer(int port = 80): WebServer(port) { }
+    fs_WebServer(IPAddress addr, int port): WebServer(addr, port){ }
     using WebServer:: send_P;
     void send_P(int code, PGM_P content_type, PGM_P content) {
       size_t contentLength = 0;
