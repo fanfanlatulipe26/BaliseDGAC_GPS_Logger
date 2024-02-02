@@ -23,9 +23,10 @@
 //        (GSM et telemetrie sont incompatibles)
 //      - définir le type de GPS
 //      - définir les pins GPS_RX_PIN et GPS_TX_PIN utilisées pour communiquer avec le GPS.
-//      - définir eventuellement les pins iBus_RX et iBus_TX 27 utilisées pour communiquer
+//      - définir eventuellement les pins iBus_RX et iBus_TX  utilisées pour communiquer
 //        avec le recepteur FlySky /iBus pour la telemetrie.
 //        ATTENTION:ne pas oublier la diode entre pin iBus_RX et récepteur , cathode cote Arduino.
+//      - ATTENTION: avec un ESP32C3 l'option GSM ou iBus fait perdre les sortie de debug sur Serial monitor de l'IDE Arduino
 //      - définir eventuellement la pin utilisée pour faire un reset "usine" 
 //        Utile si on a perdu le mot de passe ...., et pour éviter de recharger en entier le logiciel ....
 //        Pin a mettre temporairement à la masse pour reinitilaiser les options/preferences "standard" lors du reset
@@ -39,7 +40,7 @@
 #define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
 //#define repondeurGSM  // pour envoyer dans un SMS la position avec une module GSM SIM800L (uniquement pour une carte à base ESP32 / ESP32C3)et incompatible avec fs_iBus
 #define fs_STAT     // pour avoir une page de statisques,durée exécution, erreurs GPS, etc ...Utile en phase développement ..
-//#define fs_iBus // pour envois informations GPS par telemetrie type FlySky / iBUS (incompatible avec repondeurGSM)
+#define fs_iBus // pour envois informations GPS par telemetrie type FlySky / iBUS (incompatible avec repondeurGSM)
 //--------------------------------------------------------------------------------------------------------
 //  Options choix du type de GPS
 //--------------------------------------------------------------------------------------------------------
@@ -72,7 +73,7 @@
 //--------------------------------------------------------------------------------------------------------------------------
 // Pour ESP01-C3  , même format que ESP01 mais avec un ESP32-C3
 // LILYGO® TTGO T-01C3 ESP32-C3
-
+/*
 #define GPS_RX_PIN 8           // D1 Brancher le fil Tx du GPS .
 #define GPS_TX_PIN 9            // D2 Brancher le fil Rx du GPS .
 #define pinFactoryReset 2
@@ -86,7 +87,7 @@
 // On perdra le debug sur Serial
 #define iBus_RX 20   // vers pin iBus sensor du recepteur Flysky
 #define iBus_TX 21   // vers pin iBus sensor du recepteur Flysky
-
+*/
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour module  ESP3-C3-32S-kit  NodeMCU-Series
 /*
@@ -96,7 +97,7 @@
 //#define GSM_TX 18   // vers TX du module GSM SIM800L (ne pas oublier la diode, cathode cote Arduino)
 // On ne peut utiliser pin 20/21 car conflit avec adaptateur USB pour UART0 ???
 #define iBus_RX 19   // vers pin iBus sensor du recepteur Flysky
-#define iBus_TX 18   // vers pin iBus sensor du recepteur Flysky
+#define iBus_TX 18   // vers pin iBus sensor du recepteur Flysky avec diode, cathode coté ESP
 //#define pinLed 19
 */
 //----------------------------------------------------------------------------------------------------------------------------
@@ -108,7 +109,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour ESP32 ESP32 Dev Kit
-/*
+
 #define GPS_RX_PIN 4           // D1 Brancher le fil Tx du GPS . 
 #define GPS_TX_PIN 2            // D2 Brancher le fil Rx du GPS .
 //#define pinLed 2              // builtin LED du module 32 Dev Kit
@@ -117,9 +118,9 @@
 //#define GSM_TX 19   //  exemple pour ESP32 Dev kit.  vers TX du module GSM SIM800L
 //#define iBus_RX 25   //  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
 //#define iBus_TX 27   //  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
-#define iBus_RX 16   //  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
-#define iBus_TX 17   //  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
-*/
+#define iBus_RX 16   // (label RX2) exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
+#define iBus_TX 17   // (label TX2)  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
+
 
 // ------------------------------------------------------------------------------------------------
 

@@ -26,6 +26,7 @@
 #include <LittleFS.h>
 #include <EEPROM.h>
 #include "droneID_FR.h"
+#include "fs_telemetrie.h"
 #ifdef ESP32
 #include <Update.h>
 extern fs_WebServer server;
@@ -42,7 +43,7 @@ extern unsigned long TimeShutdown;
 extern boolean countdownRunning;
 extern droneIDFR drone_idfr;
 #ifdef fs_STAT
-extern statBloc_t  statNotFound , statCockpit ;
+extern statBloc_t statNotFound, statCockpit;
 #endif
 extern TinyGPSPlus gps;
 
@@ -53,10 +54,10 @@ struct pref factoryPrefs;
 //  Voir https://github.com/espressif/arduino-esp32/issues/6920
 // Attention: pour ESP8266 il faut un delay "standard"  ....
 
-void sendChunkDebut ( bool avecTopMenu ) {
+void sendChunkDebut(bool avecTopMenu) {
   server.chunkedResponseModeStart(200, "text/html");
   server.sendContent_P(fs_style);
-  if (avecTopMenu)server.sendContent_P(topMenu);
+  if (avecTopMenu) server.sendContent_P(topMenu);
 }
 void handleCockpit() {
   //  reset du timeout pour arreter le wifi
@@ -72,7 +73,7 @@ void handleCockpit() {
 }
 void handleCockpitNotFound() {
   //Serial.print("handleCockpitNotFound "); Serial.print (server.hostHeader()); Serial.print("  ");Serial.println (server.uri());
-  sendChunkDebut ( true );  // debut HTML style, avec topMenu
+  sendChunkDebut(true);  // debut HTML style, avec topMenu
   server.sendContent_P(cockpit);
   server.sendContent_P(cockpit_fin);
   server.chunkedResponseFinalize();
@@ -82,10 +83,10 @@ void handleNotFound() {
   if (loadFromSPIFFS(server.uri())) return;  // permet de telecharger un fichier par appel direct
 #ifdef fs_STAT
   statNotFound.T0 = millis();
-  handleCockpitNotFound(); //  sinon: acces au portail général
+  handleCockpitNotFound();  //  sinon: acces au portail général
   calculerStat(true, &statNotFound);
 #else
-  handleCockpitNotFound(); //  sinon: acces au portail général
+  handleCockpitNotFound();  //  sinon: acces au portail général
 #endif
 }
 
@@ -96,15 +97,15 @@ void logRingBuffer(char ringBuffer[], int sizeBuffer, int indexBuffer) {
   fileToAppend.println(F("\n====================="));
   fileToAppend.printf_P(PSTR("%u bauds,%uHz\n"), preferences.baud, preferences.hz);
   fileToAppend.println(indexBuffer);
-  fileToAppend.write((uint8_t*)ringBuffer[indexBuffer], sizeBuffer - indexBuffer);
-  fileToAppend.write((uint8_t*)ringBuffer, indexBuffer);
+  fileToAppend.write((uint8_t *)ringBuffer[indexBuffer], sizeBuffer - indexBuffer);
+  fileToAppend.write((uint8_t *)ringBuffer, indexBuffer);
   fileToAppend.println();
   fileToAppend.close();
   yield();
 }
 
 // Problème détecté avec la lecture du GPS. On enregistre des infos dans un log d'erreur.
-void logError(TinyGPSPlus &gps, float latLastLog, float lngLastLog , float segment) {
+void logError(TinyGPSPlus &gps, float latLastLog, float lngLastLog, float segment) {
   char logFileName[] = "/errorlog.txt";
   bool isFileExist = LittleFS.exists(logFileName);
   File fileToAppend = LittleFS.open(logFileName, "a");
@@ -126,41 +127,44 @@ void logError(TinyGPSPlus &gps, float latLastLog, float lngLastLog , float segme
 //    (le file system est surement plein, avec un seul fichier
 //
 char traceFileName[25] = "";  // en global , car utilisé aussi dans  telechargement.
-File traceFile; // en global. Besoin dans le main et pour download
+File traceFile;               // en global. Besoin dans le main et pour download
 bool fs_ecrireTrace(TinyGPSPlus &gps) {
 
   int longueurEcriture;
   if (!traceFileOpened) {
-    if (traceFileName[0] == 0) { // on cree une seule fois le nom fichier dans un run
+    if (traceFileName[0] == 0) {  // on cree une seule fois le nom fichier dans un run
       sprintf_P(traceFileName, PSTR("/%04u-%02u-%02u_%02u-%02u"), gps.date.year(), gps.date.month(), gps.date.day(),
                 gps.time.hour(), gps.time.minute());
       // Serial.printf_P(PSTR("date.isValid: %s location.isValid: %s\n"), gps.date.isValid() ? "yes" : "no", gps.location.isValid() ? "yes" : "no");
     }
     if (!LittleFS.exists(traceFileName)) {
-      Serial.print(F("Création du fichier trace ")); Serial.println(traceFileName);
+      Serial.print(F("Création du fichier trace "));
+      Serial.println(traceFileName);
       traceFile = LittleFS.open(traceFileName, "a");
       Serial.printf_P(PSTR(" open append:%s\n"), traceFile ? "OK" : "FAIL");  //+++++++++++++++++++++++++++++++++++++++++
-      traceFile.close();  // le creer et forcer son enregistrement
+      traceFile.close();                                                      // le creer et forcer son enregistrement
     }
     traceFile = LittleFS.open(traceFileName, "a");
     if (!traceFile) {
-      Serial.print(F("Error opening the file for appending ")); Serial.println(traceFileName);
-      traceFile.close(); // just in case  ;-)
+      Serial.print(F("Error opening the file for appending "));
+      Serial.println(traceFileName);
+      traceFile.close();  // just in case  ;-)
       return removeOldest();
     }
     traceFileOpened = true;
   }
   // structure servant à stocker en binaire une ligne (un point) du log de trace
-  trackLigne_t trackLigne;;
+  trackLigne_t trackLigne;
+  ;
   trackLigne.lat = gps.location.lat();
   trackLigne.lng = gps.location.lng();
-  trackLigne.hour = gps.time.hour(); // Hour (0-23) (u8)
-  trackLigne.minute = gps.time.minute(); // Minute (0-59) (u8)
-  trackLigne.second = gps.time.second(); // Second (0-59) (u8)
-  trackLigne.centisecond = gps.time.centisecond(); // 100ths of a second (0-99) (u8)
+  trackLigne.hour = gps.time.hour();                // Hour (0-23) (u8)
+  trackLigne.minute = gps.time.minute();            // Minute (0-59) (u8)
+  trackLigne.second = gps.time.second();            // Second (0-59) (u8)
+  trackLigne.centisecond = gps.time.centisecond();  // 100ths of a second (0-99) (u8)
   trackLigne.altitude = gps.altitude.meters();
   trackLigne.speed = gps.speed.kmph();
-  trackLigne.VmaxSegment = VmaxSegment; // vitesse max vue entre ce point et le point précédent en km/h
+  trackLigne.VmaxSegment = VmaxSegment;  // vitesse max vue entre ce point et le point précédent en km/h
   trackLigne.AltMaxSegment = AltMaxSegment;
   VmaxSegment = 0.0;
   AltMaxSegment = 0.0;
@@ -169,7 +173,7 @@ bool fs_ecrireTrace(TinyGPSPlus &gps) {
     Serial.println(F("Erreur longueur écriture."));
     traceFile.close();
     traceFileOpened = false;
-    return removeOldest(); // on essaye de gagner de la place
+    return removeOldest();  // on essaye de gagner de la place
   }
   return true;
 }
@@ -200,10 +204,10 @@ bool removeOldest() {
     if (fileName.charAt(0) != '/') fileName = "/" + fileName;
     // Ici le fileName est /xyz...  (ESP32 ou 8266)
     nbrFiles++;
-    if (fileName < oldest ) {
+    if (fileName < oldest) {
       oldest = fileName;
     }
-    if (fileName > youngest ) {
+    if (fileName > youngest) {
       youngest = fileName;
     }
 #ifdef ESP32
@@ -216,12 +220,12 @@ bool removeOldest() {
   dir.close();
 #endif
   Serial.printf_P(PSTR("oldest:%s\n"), oldest.c_str());
-  if (  nbrFiles > 4) {
-    messAlarm = ""; // on va faire de la place dans la mémoire (?) .Enlever message alarme
+  if (nbrFiles > 4) {
+    messAlarm = "";  // on va faire de la place dans la mémoire (?) .Enlever message alarme
     fileSystemFull = false;
     return LittleFS.remove(oldest);
   }
-  return false ;  // on a rien pu faire: erreur permanente ou moins de 4 fichiers
+  return false;  // on a rien pu faire: erreur permanente ou moins de 4 fichiers
 }
 
 void listSPIFFS(String message) {
@@ -234,7 +238,7 @@ void listSPIFFS(String message) {
   server.sendContent(response);
   // Adaptation ESP8266 / ESP32 pour liste directory vu à partir ligne 185 dans
   //https://github.com/lorol/ESPAsyncWebServer/blob/master/src/SPIFFSEditor.cpp#L185
-  traceFile.flush(); // mettre à jour les infos sur fichir et fs
+  traceFile.flush();  // mettre à jour les infos sur fichir et fs
 #ifdef ESP32
   File dir = LittleFS.open("/");
 #else
@@ -256,16 +260,15 @@ void listSPIFFS(String message) {
     // Ici le fileName est /xyz...  (ESP32 ou 8266)
     if (!f) {
       response = "<tr><td>" + fileName + "</td><td>Open error !! </td><td><\td><td><\td>\n";
-    }
-    else {
+    } else {
       totalSize += f.size();
       nbrFiles++;
-      if (fileName.substring(0, 2) == "/2" ) { // ne prendre en compte que les fichiers de trace pour oldest/younger
-        if (fileName < oldest ) {
+      if (fileName.substring(0, 2) == "/2") {  // ne prendre en compte que les fichiers de trace pour oldest/younger
+        if (fileName < oldest) {
           oldest = fileName;
           idOldest = nbrFiles;
         }
-        if (fileName > youngest ) {
+        if (fileName > youngest) {
           youngest = fileName;
           idYoungest = nbrFiles;
         }
@@ -279,13 +282,12 @@ void listSPIFFS(String message) {
       response = "<tr><td><button id='" + String(nbrFiles) + "' class = 'b0' type='submit' name='filename' formaction='/fileInfo_'";
       response += " value='" + fileName + "'>" + fileName + "</button></td>";
       response += "<td id='L" + String(nbrFiles) + "'>" + (String)f.size() + "</td>\n";
-      response += "<td><button class='b2' type='submit' onclick='return D1()' name='delete' value='" + fileName + "'>Effacer</button></td>\n";
-      response += "<td><a href='" + fileName + "' download='" + fileName.substring(1)  +
+      response += "<td><button class='b2' type='submit' onclick='return D1(\"" + fileName + "\")' name='delete' value='" + fileName + "'>Effacer</button></td>\n";
+      response += "<td><a href='" + fileName + "' download='" + fileName.substring(1) +
                   //     ((fileName.charAt(0) == '2' ) ? ("." + String(preferences.formatTrace)) : "" ) +
                   // Les fichier de trace commencent tous par l'année /2xxx .   (/ rajouté pour ESP32 ...)
-                  ((fileName.charAt(1) == '2' ) ? ("." + String(preferences.formatTrace)) : "" ) +  // fichier trace /2021-
+                  ((fileName.charAt(1) == '2') ? ("." + String(preferences.formatTrace)) : "") +  // fichier trace /2021-
                   "'><button class='b1' type='button'>T&eacute;l&eacute;charger </button></a></td></tr>\n";
-      response += "</tr>";
     }
     server.sendContent(response);
 #ifdef ESP32
@@ -299,29 +301,28 @@ void listSPIFFS(String message) {
 #endif
   response = "</table></form>";
   if (nbrFiles != 0) {
-    response += "<script>gel('" + String(idYoungest) + "').style.backgroundColor='SpringGreen';"\
-                + "gel('" + String(idOldest) + "').style.backgroundColor='Orange';"\
+    response += "<script>gel('" + String(idYoungest) + "').style.backgroundColor='SpringGreen';"
+                + "gel('" + String(idOldest) + "').style.backgroundColor='Orange';"
                 + "gel('L" + String(idLongest) + "').style.backgroundColor='Orange';</script>";
   }
 
 #ifdef ESP32
   response += "<br>Nombre de traces: " + String(nbrFiles) + "<br>Taille totale: " + String(totalSize);
-  response += "<br>Espace disponible: " + String(LittleFS.totalBytes()) + "<br>Espace utilisé: " + String(LittleFS.usedBytes()) ;
+  response += "<br>Espace disponible: " + String(LittleFS.totalBytes()) + "<br>Espace utilisé: " + String(LittleFS.usedBytes());
 #else
   FSInfo fs_info;
   if (LittleFS.info(fs_info)) {
     size_t totalBytes;
     size_t usedBytes;
     response += "<br>Nombre de traces: " + String(nbrFiles) + "<br>Taille totale: " + String(totalSize);
-    response += "<br>Espace disponible: " + String(fs_info.totalBytes) + "<br>Espace utilisé: " + String(fs_info.usedBytes) ;
-  }
-  else {
+    response += "<br>Espace disponible: " + String(fs_info.totalBytes) + "<br>Espace utilisé: " + String(fs_info.usedBytes);
+  } else {
     response += "<br>Erreurs dans le système de fichier ";
   }
 #endif
   response += "</div></body></html> ";
   server.sendContent(response);
-  return ;
+  return;
 }
 
 // Garder uniquement les preferences.nbrMaxTraces dernieres traces
@@ -352,13 +353,13 @@ bool loadFromSPIFFS(String path) {
   // Un autre fichier peut exister errorlog.txt qui lui sera directement téléchargé.
   // Les autres demandes sont a tous les coups des "notFound"
   // Les autres (fichiers log erreur sont simplement directement téléchargés.
-  if (path.substring(0, 2) == "/e" ) {
+  if (path.substring(0, 2) == "/e") {
     File dataFile = LittleFS.open(path.c_str(), "r");
     if (!dataFile) return false;
-    server.streamFile(dataFile, "text/plain") ;
+    server.streamFile(dataFile, "text/plain");
     dataFile.close();
     return true;
-  } else if (path.substring(0, 2) != "/2" ) {
+  } else if (path.substring(0, 2) != "/2") {
     return false;
   } else {
 
@@ -369,7 +370,7 @@ bool loadFromSPIFFS(String path) {
     //   /yyyy-mm-dd
     //   01234678901
     // dateDuFichier va servir à construire le champ date/heure du fichier GPX
-    String dateDuFichier = path.substring(1, 11); // on oublit le / du debut de l'uri yyyy-mm-dd
+    String dateDuFichier = path.substring(1, 11);  // on oublit le / du debut de l'uri yyyy-mm-dd
     if (strcmp(traceFileName, path.c_str()) == 0) {
       Serial.println(F("Fermeture fichier trace en cours"));
       traceFile.close();
@@ -378,7 +379,8 @@ bool loadFromSPIFFS(String path) {
 
     File dataFile = LittleFS.open(path.c_str(), "r");
     if (!dataFile) return false;
-    Serial.print (F("download fichier ")); Serial.println(path);
+    Serial.print(F("download fichier "));
+    Serial.println(path);
     server.chunkedResponseModeStart(200, "text/plain");
     // creer le header
     if (strcmp(preferences.formatTrace, "csv") == 0) {
@@ -389,24 +391,23 @@ bool loadFromSPIFFS(String path) {
       if (preferences.logAltitude) logMessage += ",Altitude,Altitude_max_segment";
       logMessage += "\n";
       server.sendContent(logMessage);
-    }
-    else {
+    } else {
       server.sendContent_P(headerGPX);
     }
     char buf[1024];
-    int deb ;
+    int deb;
     deb = 0;
     while (dataFile.available()) {
       dataFile.read((uint8_t *)&trackLigne, sizeof(trackLigne));
-      if (strcmp(preferences.formatTrace, "csv") == 0) { //generation CSV
+      if (strcmp(preferences.formatTrace, "csv") == 0) {  //generation CSV
         //  12:30:31,-90.00000,-180.00000,1000.00,1000.00,99999.99,99999.99
         //  123456789012345678901234567890123456789012345678901234567890123
         //  Soit un total de 63 + 2 (cr/lf) + 1 = 65 caractères par point CSV max
-        if (sizeof(buf) - deb < 70 ) {
+        if (sizeof(buf) - deb < 70) {
           // Serial.printf("Ecriture buffer download %i\n", deb);
-          server.sendContent((const char*)buf, deb);
+          server.sendContent((const char *)buf, deb);
           deb = 0;
-          buf[0] = 0; // chaine vide
+          buf[0] = 0;  // chaine vide
         }
         if (preferences.logHeure) deb += sprintf_P(&buf[deb], PSTR("%02u:%02u:%02u.%02u,"), trackLigne.hour, trackLigne.minute, trackLigne.second, trackLigne.centisecond);
         deb += sprintf_P(&buf[deb], PSTR("%.6f,%.6f"), trackLigne.lat, trackLigne.lng);
@@ -419,14 +420,13 @@ bool loadFromSPIFFS(String path) {
           deb += sprintf_P(&buf[deb], PSTR(",%.2f"), trackLigne.AltMaxSegment);
         }
         deb += sprintf_P(&buf[deb], PSTR("\r\n"));
-      }
-      else { // generation GPX
+      } else {  // generation GPX
         // <trkpt lat=" - 90.20169" lon=" - 180.67096"><ele>99999.40</ele><time>2002-02-10T16:56:22.00Z</time></trkpt>
         // 123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
         // 103 + 2(cr/lf) + 1     106 caractères max pour une entrée
-        if (sizeof(buf) - deb < 120 ) {
+        if (sizeof(buf) - deb < 120) {
           // Serial.printf_P(PSTR("Ecriture buffer download %i\n"), deb);
-          server.sendContent((const char*)buf, deb);
+          server.sendContent((const char *)buf, deb);
           deb = 0;
           buf[0] = 0;
         }
@@ -453,14 +453,14 @@ bool loadFromSPIFFS(String path) {
       // </trkseg></trk></gpx>
       // 12345678901234567890123
       //   21 + 1 + 2 (cr/lf) = 24 carca
-      if (sizeof(buf) - deb < 26 ) {
-        server.sendContent((const char*)buf, deb);
+      if (sizeof(buf) - deb < 26) {
+        server.sendContent((const char *)buf, deb);
         deb = 0;
         buf[0] = 0;
       }
       deb += sprintf_P(&buf[deb], PSTR("</trkseg></trk></gpx>"));
     }
-    server.sendContent((const char*)buf, deb);
+    server.sendContent((const char *)buf, deb);
     server.chunkedResponseFinalize();
     dataFile.close();
     return true;
@@ -479,20 +479,21 @@ void handleDelete() {
   if (LittleFS.remove(server.arg("delete"))) {
     result += " a &eacute;t&eacute; effac&eacute;";
     fileSystemFull = false;
-    messAlarm = ""; // on va faire de la place dans la mémoire (?) .Enlever message alarme
-  }
-  else
+    messAlarm = "";  // on va faire de la place dans la mémoire (?) .Enlever message alarme
+  } else
     result += " n'existe pas.";
-  Serial.print(F("delete de ")); Serial.println(server.arg("delete"));
+  Serial.print(F("delete de "));
+  Serial.println(server.arg("delete"));
   gestionSpiff(result);
 }
 // generation d'une page info sur un fichier.//
 // Recherche de vitesse et altitude max sur les segments
 void handleFileInfo() {
   char buf[400];
-  int deb ;
+  int deb;
   deb = 0;
-  Serial.print(F("handleFileInfo fichier:")); Serial.println(server.arg("filename"));
+  Serial.print(F("handleFileInfo fichier:"));
+  Serial.println(server.arg("filename"));
   trackLigne_t trackLigne, trackLigneFirst, trackLigneVmax, trackLigneAltMax;
   trackLigneVmax.VmaxSegment = -1.0;
   trackLigneAltMax.AltMaxSegment = -1.0;
@@ -507,14 +508,13 @@ void handleFileInfo() {
   if (!dataFile) {
     Serial.print(F("Err open handleFileInfo "));
     Serial.println(server.arg("filename"));
-  }
-  else {
+  } else {
     while (dataFile.available()) {
       dataFile.read((uint8_t *)&trackLigne, sizeof(trackLigne));
       if (nbrPts == 0) trackLigneFirst = trackLigne;
       if (trackLigne.VmaxSegment > trackLigneVmax.VmaxSegment)
         trackLigneVmax = trackLigne;
-      if (trackLigne.AltMaxSegment > trackLigneAltMax.AltMaxSegment )
+      if (trackLigne.AltMaxSegment > trackLigneAltMax.AltMaxSegment)
         trackLigneAltMax = trackLigne;
       nbrPts++;
     }
@@ -545,7 +545,7 @@ void handleFileInfo() {
   deb += sprintf_P(&buf[deb], PSTR("<br>Hmax % .2f m à %02d:%02d:%02d.%02d"), trackLigneAltMax.AltMaxSegment, trackLigneAltMax.hour, trackLigneAltMax.minute,
                    trackLigneAltMax.second, trackLigneAltMax.centisecond);
   deb += sprintf_P(&buf[deb], PSTR("</div></body></html>"));
-  server.sendContent( buf );
+  server.sendContent(buf);
   server.chunkedResponseFinalize();
   // Serial.println(deb);
 }
@@ -560,7 +560,7 @@ void handleFormatage() {
 #else
     Serial.println(LittleFS.begin() ? F("Ready") : F("Failed!"));  // pour ESP8266 format if fail par defaut
 #endif
-    traceFileName[0] = 0; // forcer la recréation éventuelle du trace file
+    traceFileName[0] = 0;  // forcer la recréation éventuelle du trace file
     traceFileOpened = false;
     fileSystemFull = false;
     messAlarm = "";
@@ -570,10 +570,9 @@ void handleFormatage() {
   }
 }
 void gestionSpiff(String message) {
-  sendChunkDebut ( true );  // debut HTML style, avec topMenu
+  sendChunkDebut(true);  // debut HTML style, avec topMenu
   listSPIFFS(message);
   server.chunkedResponseFinalize();
-
 }
 void handleGestionSpiff() {
   countdownRunning = false;
@@ -586,7 +585,7 @@ void handleGestionSpiff() {
 void checkFactoryReset() {
 #ifdef pinFactoryReset
   pinMode(pinFactoryReset, INPUT_PULLUP);
-  if (digitalRead(pinFactoryReset) == HIGH ) return;
+  if (digitalRead(pinFactoryReset) == HIGH) return;
   savePreferences();
   // attendre un vrai rédémmarage. Pour eviter un court circuit si pinFactoryReset est aussi utilisée plus tard comme sortie
   // (cas de la pin 2 sur ESP01/8266 ....)
@@ -598,7 +597,7 @@ void checkFactoryReset() {
 
 void readPreferences() {
   EEPROM.get(0, preferences);
-  if ( strcmp(factoryPrefs.signature, preferences.signature) != 0) {
+  if (strcmp(factoryPrefs.signature, preferences.signature) != 0) {
     Serial.print(F("  EEPROM corrompue ? Initialisation configuration 'usine'"));
     preferences = factoryPrefs;
     savePreferences();
@@ -614,23 +613,42 @@ void savePreferences() {
 }
 
 void listPreferences() {
-  Serial.print(F("password : ")); Serial.println(preferences.password);
-  Serial.print(F("ssid_AP : ")); Serial.println(preferences.ssid_AP);
-  Serial.print(F("drone_id : ")); Serial.println(preferences.drone_id);
-  Serial.print(F("SMSCommand : ")); Serial.println(preferences.SMSCommand);
-  Serial.print(F("logOn : ")); Serial.println(preferences.logOn ? "TRUE" : "FALSE");
-  Serial.print(F("logToujours : ")); Serial.println(preferences.logToujours ? "TRUE" : "FALSE");
-  Serial.print(F("logAfter : ")); Serial.println(preferences.logAfter);
-  Serial.print(F("formatTrace : ")); Serial.println(preferences.formatTrace);
-  Serial.print(F("logVitesse : ")); Serial.println(preferences.logVitesse ? "TRUE" : "FALSE");
-  Serial.print(F("logAltitude : ")); Serial.println(preferences.logAltitude ? "TRUE" : "FALSE");
-  Serial.print(F("logHeure : ")); Serial.println(preferences.logHeure ? "TRUE" : "FALSE");
-  Serial.print(F("nbrMaxTraces : ")); Serial.println(preferences.nbrMaxTraces);
-  Serial.print(F("baud : ")); Serial.println(preferences.baud);
-  Serial.print(F("hz : ")); Serial.println(preferences.hz);
-  Serial.print(F("arretWifi : ")); Serial.println(preferences.arretWifi ? "TRUE" : "FALSE");
-  Serial.print(F("timeoutWifi : ")); Serial.println(preferences.timeoutWifi);
-  Serial.print(F("basseConso : ")); Serial.println(preferences.basseConso ? "TRUE" : "FALSE");
+  Serial.print(F("password : "));
+  Serial.println(preferences.password);
+  Serial.print(F("ssid_AP : "));
+  Serial.println(preferences.ssid_AP);
+  Serial.print(F("drone_id : "));
+  Serial.println(preferences.drone_id);
+  Serial.print(F("SMSCommand : "));
+  Serial.println(preferences.SMSCommand);
+  Serial.print(F("logOn : "));
+  Serial.println(preferences.logOn ? "TRUE" : "FALSE");
+  Serial.print(F("logToujours : "));
+  Serial.println(preferences.logToujours ? "TRUE" : "FALSE");
+  Serial.print(F("logAfter : "));
+  Serial.println(preferences.logAfter);
+  Serial.print(F("formatTrace : "));
+  Serial.println(preferences.formatTrace);
+  Serial.print(F("logVitesse : "));
+  Serial.println(preferences.logVitesse ? "TRUE" : "FALSE");
+  Serial.print(F("logAltitude : "));
+  Serial.println(preferences.logAltitude ? "TRUE" : "FALSE");
+  Serial.print(F("logHeure : "));
+  Serial.println(preferences.logHeure ? "TRUE" : "FALSE");
+  Serial.print(F("nbrMaxTraces : "));
+  Serial.println(preferences.nbrMaxTraces);
+  Serial.print(F("baud : "));
+  Serial.println(preferences.baud);
+  Serial.print(F("hz : "));
+  Serial.println(preferences.hz);
+  Serial.print(F("arretWifi : "));
+  Serial.println(preferences.arretWifi ? "TRUE" : "FALSE");
+  Serial.print(F("timeoutWifi : "));
+  Serial.println(preferences.timeoutWifi);
+  Serial.print(F("basseConso : "));
+  Serial.println(preferences.basseConso ? "TRUE" : "FALSE");
+  Serial.print(F("iBusActif : "));
+  Serial.println(preferences.iBusActif ? "TRUE" : "FALSE");
 }
 void handleOptionLogProcess() {
   //Serial.println(F("handleOptionLogProcess"));
@@ -639,15 +657,14 @@ void handleOptionLogProcess() {
     bool  hasArg (const char *name)
   */
 
-  preferences.logAfter =  (int)std::strtol(server.arg("logAfter").c_str(), nullptr, 10);
+  preferences.logAfter = (int)std::strtol(server.arg("logAfter").c_str(), nullptr, 10);
   //Si "unit" est m: log d'un point trace après un déplacement de n mètre.
   //Si "unit" est ms: log d'un point trace chaque n millis seconde. La veleur de n est stocké en négatif ( historique ...!)
   //    100 ms minimum (10hz ...)
 
-  if (server.arg("unit") == "ms")
-  {
+  if (server.arg("unit") == "ms") {
     if (preferences.logAfter < 100) preferences.logAfter = -100;
-    else  preferences.logAfter = -preferences.logAfter;
+    else preferences.logAfter = -preferences.logAfter;
   }
   server.arg("formatTrace").toCharArray(preferences.formatTrace, 4);
   preferences.logOn = server.arg("logOn") == "Oui";
@@ -668,17 +685,17 @@ void handleOptionGPSProcess() {
     restartGps = true;
     preferences.baud = bds;
   }
-  int hz =  (int)std::strtol(server.arg("hz").c_str(), nullptr, 10);
+  int hz = (int)std::strtol(server.arg("hz").c_str(), nullptr, 10);
   // pour 9600bds, limited le rafrachissement à 5hz sinon boom...
   if (bds == 9600 && hz > 5) hz = 5;
-  if (hz != preferences.hz ) {
+  if (hz != preferences.hz) {
     restartGps = true;
     preferences.hz = hz;
   }
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
   displayOptionsSysteme("Préferences de gestion du GPS mises à jour.");
-  if (restartGps)  fs_initGPS(preferences.baud, preferences.hz);
+  if (restartGps) fs_initGPS(preferences.baud, preferences.hz);
 }
 
 void handleOptionPointAccesProcess() {
@@ -686,8 +703,8 @@ void handleOptionPointAccesProcess() {
   if (server.hasArg("timeoutWifi"))
     preferences.timeoutWifi = (int)std::strtol(server.arg("timeoutWifi").c_str(), nullptr, 10);
   preferences.basseConso = (server.arg("conso") == "Oui");
-  server.arg("password").toCharArray(preferences.password, 9); //   forcer à 8  ??     init ""  ????????????
-  server.arg("ssid_AP").toCharArray(preferences.ssid_AP, 33); //    init ""
+  server.arg("password").toCharArray(preferences.password, 9);  //   forcer à 8  ??     init ""  ????????????
+  server.arg("ssid_AP").toCharArray(preferences.ssid_AP, 33);   //    init ""
   if (strlen(preferences.ssid_AP) == 0) strcpy(preferences.ssid_AP, factoryPrefs.ssid_AP);
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -695,17 +712,28 @@ void handleOptionPointAccesProcess() {
 }
 
 void handleOptionSMSCommand() {
-  server.arg("SMSCommand").toCharArray(preferences.SMSCommand, 9); //   forcer à 8  ??     init ""  ????????????
+  server.arg("SMSCommand").toCharArray(preferences.SMSCommand, 9);  //   forcer à 8  ??     init ""  ????????????
   savePreferences();
   listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
   displayOptionsSysteme("Préferences de gestion de l'envoi d'un SMS mises à jour.");
 }
 
+void handleOptionIBUS() {
+  preferences.iBusActif = (server.arg("iBusActif") == "Oui");
+  if (preferences.iBusActif)
+    iBusRestart();
+  else
+    iBusStop();
+  savePreferences();
+  listPreferences();  // ++++++++++++++++++++++++++++++++++++++++++++++++++
+  displayOptionsSysteme("Préferences de gestion télémesure iBus mises à jour.");
+}
+
 void handleDroneID() {
   // left padding sur 24 caractères avec "0"
-  for (int i = 6 ; i < strlen (preferences.drone_id)  ; i++) preferences.drone_id[i] = '0';
+  for (int i = 6; i < strlen(preferences.drone_id); i++) preferences.drone_id[i] = '0';
   int drone_idLength = server.arg("drone_id").length();
-  if (drone_idLength == 0) { // si on a donné un champ vide, on reinitialise à la valeur canonique par defaut
+  if (drone_idLength == 0) {  // si on a donné un champ vide, on reinitialise à la valeur canonique par defaut
     strcpy(preferences.drone_id, factoryPrefs.drone_id);
   } else {
     server.arg("drone_id").toCharArray(&preferences.drone_id[24 + 6 - drone_idLength], drone_idLength + 1);
@@ -725,7 +753,10 @@ void handleOptionsPreferences() {
   message += "; gel('drone_id').value = '" + String(preferences.drone_id).substring(6) + "'";
 #ifdef repondeurGSM
   message += "; gel('SMSCommand').value = '" + String(preferences.SMSCommand) + "'";
-  message += "; gel('myPhoneNumber').innerHTML = '" + String ( smsHelper.myPhoneNumber) + "'";
+  message += "; gel('myPhoneNumber').innerHTML = '" + String(smsHelper.myPhoneNumber) + "'";
+#endif
+#ifdef fs_iBus
+  message += "; gel('" + String((preferences.iBusActif ? "ouiIBUS" : "nonIBUS")) + "').checked = true";
 #endif
   //  message += "; gel('local_ip').value = '" + String(preferences.local_ip) + "'";
   //  message += "; gel('gateway').value = '" + String(preferences.gateway) + "'";
@@ -735,19 +766,19 @@ void handleOptionsPreferences() {
     message += "; gel('millis').selected = 'true'";
   else
     message += "; gel('metre').selected = 'true'";
-  message += "; gel('" + String((preferences.logOn ? "ouiLog" : "nonLog"))  + "').checked = true";
-  message += "; gel('" + String((preferences.logToujours ? "ouiToujours" : "nonToujours"))  + "').checked = true";
+  message += "; gel('" + String((preferences.logOn ? "ouiLog" : "nonLog")) + "').checked = true";
+  message += "; gel('" + String((preferences.logToujours ? "ouiToujours" : "nonToujours")) + "').checked = true";
   if (strcmp(preferences.formatTrace, "gpx") == 0) message += "; gel('logGPX').checked = true";
   else message += "; gel('logCSV').checked = true";
   message += "; gel('logVitesse').checked = " + String((preferences.logVitesse ? "true" : "false"));
   message += "; gel('logAltitude').checked = " + String((preferences.logAltitude ? "true" : "false"));
-  message += "; gel('logHeure').checked = " + String((preferences.logHeure ? "true" : "false" ));
+  message += "; gel('logHeure').checked = " + String((preferences.logHeure ? "true" : "false"));
   message += "; gel('nbrMaxTraces').value = " + String(preferences.nbrMaxTraces);
   message += "; gel('B" + String(preferences.baud) + "').selected = 'true'";
   message += "; gel('F" + String(preferences.hz) + "').selected = 'true'";
-  message += "; gel('" + String((preferences.arretWifi ? "ouiWifi" : "nonWifi"))  + "').checked = true";
+  message += "; gel('" + String((preferences.arretWifi ? "ouiWifi" : "nonWifi")) + "').checked = true";
   message += "; gel('timeoutWifi').value = " + String(preferences.timeoutWifi);
-  message += "; gel('" + String((preferences.basseConso ? "ouiConso" : "nonConso"))  + "').checked = true";
+  message += "; gel('" + String((preferences.basseConso ? "ouiConso" : "nonConso")) + "').checked = true";
   message += "; </script ></body></html> ";
   server.sendContent(message);
   server.chunkedResponseFinalize();
@@ -756,7 +787,7 @@ void handleGiveMeTime() {
   // repousser le timeout arret wifide 2mn
   Serial.println(F("Entrée handleGiveMeTime"));
   TimeShutdown += 2 * 60 * 1000;
-  server.send(204); // OK, no content
+  server.send(204);  // OK, no content
 }
 void handleResetUsine() {
   preferences = factoryPrefs;
@@ -766,7 +797,7 @@ void handleResetUsine() {
 void handleReset() {
   traceFile.close();
   LittleFS.end();
-  sendChunkDebut ( false );  // debut HTML style, sans  topMenu
+  sendChunkDebut(false);  // debut HTML style, sans  topMenu
   server.sendContent_P(byeBye);
   server.chunkedResponseFinalize();
   delay(1500);
@@ -774,22 +805,22 @@ void handleReset() {
 }
 
 void handleFavicon() {
- // Serial.print(F("Favicon ")); Serial.println(sizeof(favicon));
+  // Serial.print(F("Favicon ")); Serial.println(sizeof(favicon));
   server.send_P(200, "image/x-icon", favicon, sizeof(favicon));
 }
 // pour captive portal Android. Voir https://gitlab.com/defcronyke/wifi-captive-portal-esp-idf
 void handle_generate_204() {
- // Serial.print(F("generate_204 ")); Serial.print (server.hostHeader()); Serial.print("  ");
- // Serial.println (server.uri());
+  // Serial.print(F("generate_204 ")); Serial.print (server.hostHeader()); Serial.print("  ");
+  // Serial.println (server.uri());
   // on fait une redirection. Cela change url dans la barre adresse du navigateur. Plus joli !!
   server.sendHeader("Location", String("http://majoliebalise.fr"), true);
-  server.send ( 302, "text/plain", "Found");
+  server.send(302, "text/plain", "Found");
 }
-void fs_initServerOn( ) {
+void fs_initServerOn() {
   // Pour portail captif. Voir infopour Android  https://gitlab.com/defcronyke/wifi-captive-portal-esp-idf
   server.on("/", handleCockpitNotFound);
   server.on("/favicon.ico", handleFavicon);
-  server.on("/redirect",  handle_generate_204); // Pour windows  www.msftconnecttest.com//redirect
+  server.on("/redirect", handle_generate_204);      // Pour windows  www.msftconnecttest.com//redirect
   server.on("/generate_204", handle_generate_204);  // pour Android connectivitycheck.gstatic.com/generate_204
   server.onNotFound(handleNotFound);
   //
@@ -798,13 +829,16 @@ void fs_initServerOn( ) {
   server.on("/giveMeTime", handleGiveMeTime);
   server.on("/razVMaxHMAx", handleRazVMaxHMAx);
   server.on("/spiff", handleGestionSpiff);
-  server.on("/delete_" , HTTP_POST, handleDelete);
-  server.on("/fileInfo_" , HTTP_POST, handleFileInfo);
+  server.on("/delete_", HTTP_POST, handleDelete);
+  server.on("/fileInfo_", HTTP_POST, handleFileInfo);
   server.on("/formatage_", HTTP_GET, handleFormatage);  // danger mais un POST est diff a faire !!
   server.on("/optionsSysteme", handleOptionsSysteme);
   server.on("/optionLogProcess", handleOptionLogProcess);
   server.on("/optionGPSProcess", handleOptionGPSProcess);
   server.on("/optionPointAccesProcess", handleOptionPointAccesProcess);
+#ifdef fs_iBus
+  server.on("/optionIBUS", handleOptionIBUS);
+#endif
 #ifdef repondeurGSM
   server.on("/optionSMSCommand", handleOptionSMSCommand);
 #endif
@@ -822,12 +856,12 @@ void fs_initServerOn( ) {
   server.on("/recepteurDetail", handleRecepteurDetail);
 #endif
 #ifdef fs_OTA
-  fs_initServerOnOTA(server); // server.on spécicifiques à OTA
+  fs_initServerOnOTA(server);  // server.on spécicifiques à OTA
 #endif
 }
 
 void displayOptionsSysteme(String sms) {
-  sendChunkDebut ( true );  // debut HTML style, avec topMenu
+  sendChunkDebut(true);  // debut HTML style, avec topMenu
   server.sendContent_P(menuSysteme);
   server.sendContent("<div class='card gauche'><span class='b3'>" + sms + "</span><hr></div>");
   handleOptionsPreferences();
@@ -841,55 +875,56 @@ void handleOptionsSysteme() {
 
 #ifdef fs_OTA
 void handleOTA_() {
-  sendChunkDebut ( true );  // debut HTML style, avec topMenu
+  sendChunkDebut(true);  // debut HTML style, avec topMenu
   server.sendContent_P(pageOTA);
   server.chunkedResponseFinalize();
 }
 #ifdef ESP32
-void  fs_initServerOnOTA(fs_WebServer &server) {
+void fs_initServerOnOTA(fs_WebServer &server) {
 #else
-void  fs_initServerOnOTA(ESP8266WebServer &server) {
+void fs_initServerOnOTA(ESP8266WebServer &server) {
 #endif
   server.on("/OTA_", HTTP_GET, handleOTA_);
-  server.on("/update", HTTP_POST, [&server]() {
-    server.sendHeader("Connection", "close");
-    //  server.send(200, "text/plain", ((Update.hasError()) ? "ERREUR !! " : "OK.")+"La balise redémarre. Bye Bye !!<br> (je reviens peut être dans 10s ...)";
-    server.send(200, "text/plain", String(Update.hasError() ? "ERREUR !! " : "OK. ") +
-                "La balise redémarre. Bye Bye !!<br> (je reviens peut être dans 10s ...)");
-    delay(1000);
-    ESP.restart();
-  }, [&server]() {
-    HTTPUpload& upload = server.upload();
-    if (upload.status == UPLOAD_FILE_START) {
-      Serial.setDebugOutput(true);
-      //WiFiUDP::stopAll(); // ?????????????????????????++++++++++++++++++++  FS
-      traceFile.close();
-      LittleFS.end();
-      Serial.printf_P(PSTR("Update avec: % s\n"), upload.filename.c_str());
-      uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-      if (!Update.begin(maxSketchSpace)) { //start with max available size
-        Update.printError(Serial);
+  server.on(
+    "/update", HTTP_POST, [&server]() {
+      server.sendHeader("Connection", "close");
+      //  server.send(200, "text/plain", ((Update.hasError()) ? "ERREUR !! " : "OK.")+"La balise redémarre. Bye Bye !!<br> (je reviens peut être dans 10s ...)";
+      server.send(200, "text/plain", String(Update.hasError() ? "ERREUR !! " : "OK. ") + "La balise redémarre. Bye Bye !!<br> (je reviens peut être dans 10s ...)");
+      delay(1000);
+      ESP.restart();
+    },
+    [&server]() {
+      HTTPUpload &upload = server.upload();
+      if (upload.status == UPLOAD_FILE_START) {
+        Serial.setDebugOutput(true);
+        //WiFiUDP::stopAll(); // ?????????????????????????++++++++++++++++++++  FS
+        traceFile.close();
+        LittleFS.end();
+        Serial.printf_P(PSTR("Update avec: % s\n"), upload.filename.c_str());
+        uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+        if (!Update.begin(maxSketchSpace)) {  //start with max available size
+          Update.printError(Serial);
+        }
+      } else if (upload.status == UPLOAD_FILE_WRITE) {
+        if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+          Serial.println(F("Ongoing ..."));  // FS +++++++++++++++++++++++++++++++++++++++++++++++++
+          Update.printError(Serial);
+        }
+      } else if (upload.status == UPLOAD_FILE_END) {
+        if (Update.end(true)) {  //true to set the size to the current progress
+          Serial.printf_P(PSTR("Update Success: % u\nRebooting...\n"), upload.totalSize);
+        } else {
+          Update.printError(Serial);
+        }
+        Serial.setDebugOutput(false);
       }
-    } else if (upload.status == UPLOAD_FILE_WRITE) {
-      if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-        Serial.println(F("Ongoing ..."));  // FS +++++++++++++++++++++++++++++++++++++++++++++++++
-        Update.printError(Serial);
-      }
-    } else if (upload.status == UPLOAD_FILE_END) {
-      if (Update.end(true)) { //true to set the size to the current progress
-        Serial.printf_P(PSTR("Update Success: % u\nRebooting...\n"), upload.totalSize);
-      } else {
-        Update.printError(Serial);
-      }
-      Serial.setDebugOutput(false);
-    }
-    yield();
-  });
+      yield();
+    });
 }
 #endif
 // Calcul pour statistiques min/max etc ...
 // Tout est passer par référence !!  sauf T0 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void calculerStat (boolean calculerTemps, statBloc_t * bl) {
+void calculerStat(boolean calculerTemps, statBloc_t *bl) {
   // calculerTemps  true:  bl.T0 représente le temps début de la periode de mesure
   //       (utile pour stat de timming)
   // calculerTemps  false:  bl.T0 represente la mesure elle même, dont on va calculer min/max etc ..
@@ -900,7 +935,9 @@ void calculerStat (boolean calculerTemps, statBloc_t * bl) {
   T1 = millis();
   if (calculerTemps) echantillon = T1 - bl->T0;
   else echantillon = bl->T0;
-  bl->total += echantillon; bl->min = min(bl->min, echantillon); bl->max = max(bl->max, echantillon);
+  bl->total += echantillon;
+  bl->min = min(bl->min, echantillon);
+  bl->max = max(bl->max, echantillon);
   bl->sousTotal += echantillon;
   bl->count++;
   if (bl->count % 20 == 0) {
@@ -908,7 +945,7 @@ void calculerStat (boolean calculerTemps, statBloc_t * bl) {
     bl->sousTotal = 0;
   }
 }
-void razStatBloc(statBloc_t* bl) {
+void razStatBloc(statBloc_t *bl) {
   bl->min = 99999999;
   bl->max = 0;
   bl->total = 0;
@@ -917,13 +954,13 @@ void razStatBloc(statBloc_t* bl) {
   bl->T0 = 0;
   bl->moyenneLocale = 0.0;
 }
-int writeStatBloc(char buf[], int size, statBloc_t* bl) {
+int writeStatBloc(char buf[], int size, statBloc_t *bl) {
   int s = 0;
-  if ( size <= 0 ) Serial.println(F("writeStatBloc. buffer trop petit. "));
+  if (size <= 0) Serial.println(F("writeStatBloc. buffer trop petit. "));
   else
     //génére une chaine du genre     statxy$min$max$moyenne1$moyenne2;
     //  Pour affichage dans la page HTML de statistiques
     s = snprintf_P(buf, size, PSTR(" % s$ % u$ % u$ % .1f$ % .1f; "), bl->nom, bl->min, bl->max, float(bl->total) / bl->count, bl->moyenneLocale);
-  if (s >= size ) Serial.println(F("writeStatBloc. buffer trop petit. "));
+  if (s >= size) Serial.println(F("writeStatBloc. buffer trop petit. "));
   return s;
 }

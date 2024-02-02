@@ -42,7 +42,7 @@ const char versionSoft[] = "4.1b1";
 //  pour Android ??
 //enum { traceNone, traceGPX, traceCSV };
 struct pref { // preferences sauvées en EEPROM
-  char signature[6] = "ddg";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
+  char signature[6] = "edg";  // signature d'une EEPROM balise. A changer si on change les valeurs par defaut ou le format des references
   //  char signature[6] = "ablfs";  // balfs  signature d'une EEPROM balise. Ne pas toucher
   char password[9] = ""; //  Par défaut le réseau créé est ouvert
   char SMSCommand[9] = ""; //  Par défaut on met toujours les coordonnées dans le SMS envoyé
@@ -70,6 +70,7 @@ struct pref { // preferences sauvées en EEPROM
   bool logHeure = true;
   bool arretWifi = true;  // false: ne pas arreter le point d'accès Wifi en vol;  true: arreter le point d'accès
   bool basseConso = false;  // true: couper le wifi entre 2 trames.
+  bool iBusActif = true ; // pour telémesure style FlySky. L'activation dépend de toute façon de l'option define fs_iBus dans fs_option.h
 };
 // type pour structure servant à stocker en binaire une ligne (un point) du log de trace: 20 octets par point
 struct trackLigne_t {
@@ -116,6 +117,7 @@ void handleOptionLogProcess();
 void handleOptionGPSProcess();
 void handleOptionPointAccesProcess();
 void handleOptionSMSCommand();
+void handleOptionIBUS();
 void handleOptionsPreferences();
 void handleResetUsine();
 void handleDroneID();

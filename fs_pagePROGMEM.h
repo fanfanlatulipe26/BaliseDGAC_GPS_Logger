@@ -73,7 +73,7 @@ gel('bar').value=Math.round(per*100) ;
 const char fs_style[] PROGMEM = R"=====(
 <!doctype html>
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8"> 
 <title>Balise</title>
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 <META HTTP-EQUIV="Expires" CONTENT="-1">
@@ -116,6 +116,7 @@ font-size:inherit;
 font-family:inherit;
 border:5px solid  black ;
 border-radius:10px;
+font-weight: inherit;
 }
 hr{
 height:4px;
@@ -157,9 +158,14 @@ input[type=text] {
  font-size: 100%;
  font-weight: bold;
 }
+.bal {
+ font-family:"Courier New", Courier, monospace;
+ font-size: 100%;
+ font-weight: bold;
+}
 </style>
 <script>
-function D1(){return confirm("Effacer ce fichier ?");}
+function D1(file){return confirm("Effacer " + file + " ?");}
 function gel(id){return document.getElementById(id);}
 </script>
 </head>
@@ -273,7 +279,7 @@ Basse consommation après coupure?
 <label for="nonConso">Non</label><br> 
 <p>
 <label for="password">Mot de passe (vide: réseau ouvert)</label>
-<input type="text" id="password" name="password" size ="8" minlength="8"  maxlength="8" value="">
+<input type="text" id="password" name="password" pattern="[0-9a-zA-Z:_\-]*" title="8 caractères exactement, 0-9a-zA-Z:_ et -" size ="8" minlength="8"  maxlength="8" value="">
 <br>
 <label for="ssid_AP">Nom du réseau (vide: valeur par défaut)</label>
 <input type="text" id="ssid_AP" name="ssid_AP" pattern="[0-9a-zA-Z:_\-]*" title="32 caractères maximum, 0-9a-zA-Z:_ et -"
@@ -281,13 +287,27 @@ size ="32" minlength="1"  maxlength="32" value="">
 <br><span class="b3">(Faire reset / redémarrage pour prise en compte)</span>
 </form>
 )====="
+#ifdef fs_iBus
+R"=====(
+<form action="/optionIBUS">
+<hr><b>Gestion de la télémétrie FlySky/iBus</b><input style="float: right;" type="submit" value="Envoyer">
+<p>
+Télémétrie active?
+<input type="radio" id="ouiIBUS" name="iBusActif" value="Oui">
+<label for="ouiIBUS">Oui</label> 
+<input type="radio" class = "checkedRed" id="nonIBUS" name="iBusActif" value="Non">
+<label for="nonIBUS">Non</label><br> 
+<br>
+</form>
+)====="
+#endif
 #ifdef repondeurGSM
 R"=====(
 <form action="/optionSMSCommand">
 <hr><b>Gestion de l'envoi d'un SMS de localisation</b><input style="float: right;" type="submit" value="Envoyer">
 <p>
 <label for="SMSCommand">Mot de passe</label>
-<input type="text" id="SMSCommand" name="SMSCommand" size ="8" maxlength="8" value="">
+<input type="text" id="SMSCommand" name="SMSCommand"  pattern="[0-9a-zA-Z:_\-]*" title="8 caractères exactement, 0-9a-zA-Z:_ et -" size ="8" maxlength="8" value="">
  (pour <span id="myPhoneNumber">zzz</span> )
 <br>
 </form>
@@ -300,12 +320,12 @@ R"=====(
 <label for="drone_id">Identificateur 24 caractères max (vide: valeur par défaut)</label>
 <br>
 <input type="text" id="drone_idHead" name="drone_idHead"  size ="6" value="" disabled>
-<input type="text" id="drone_id" name="drone_id" pattern="[^ ]*" title="24 caractères maximum, pas d'espace"
+<input type="text" id="drone_id" name="drone_id" pattern="^((?![ ])[\x00-\x7F])*$" title="24 caractères maximum, pas d'espace, pas de caractères accentués"
 size ="24" minlength="1"  maxlength="24" value="">
 </form>
 <form action="/resetUsine">
 <hr><input style="float: right;" type="submit" value="Restauration de toutes les valeurs par défaut">
-<p>&nbsp
+<p>&nbsp;
 </form>
 </div>
 )=====";

@@ -16,6 +16,7 @@
 // https://github.com/michelep/ESP32_BeaconSniffer
 // https://www.tranquille-modelisme.fr/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html
 
+// ATTENTION: utilise le timer 0  !!!!!!!!!!!!!!!!
 
 #include "fs_options.h"
 #ifdef fs_RECEPTEUR   // compilation conditionnelle de tout le code récepteur
@@ -159,7 +160,7 @@ void handleRecepteurRefresh()
   page += "<table><tr><th>Balises dans le voisinage</th><th>RSSI</th><th>Age</th></tr>";
   for (int i = 0; i < sizeof (lesBalises) / sizeof( balise_t); i++) {
     if (lesBalises[i].age <= 60) { // ne lister que les balises reçues depuis moint de 60s
-      page += "<tr><td><button class='b1' type='submit' name='detail' value='" + String(i) + "'>" + String(lesBalises[i].identifiant) + "</button></td>";
+      page += "<tr class='bal'><td><button class='b1' type='submit' name='detail' value='" + String(i) + "'>" + String(lesBalises[i].identifiant) + "</button></td>";
       //  page += "<tr><td><button class='b1' type='submit' name='detail' value='" +  String(lesBalises[i].identifiant) + "'>" + String(lesBalises[i].identifiant) + "</button></td>";
       page += "<td>" + String(lesBalises[i].rssi) + "</td>";
       page += "<td>" + String(lesBalises[i].age) + "</td></tr>\n";
@@ -373,6 +374,7 @@ void handleRecepteur()
   modeRecepteur = true;
   initialize_wifi_sniffer();
   timer = timerBegin(0, 80, true);
+  if (timer == NULL) Serial.println("Erreur timerBegin !!");
   timerAttachInterrupt(timer, &onTimerRx, true);
   timerAlarmWrite(timer, 1000000, true);
   timerAlarmEnable(timer);
@@ -385,7 +387,7 @@ void loopRecepteur()  // appellé à chaque boucle depuis la boucle void loop()
   if (timerOccurs)
     // incrementer l'age des informations reçues des balises
   {
-    //Serial.println("Timer !!");
+   // Serial.println("Timer !!");
     for (int i = 0; i < sizeof (lesBalises) / sizeof( balise_t); i++)
       lesBalises[i].age++;
     timerOccurs = false;
