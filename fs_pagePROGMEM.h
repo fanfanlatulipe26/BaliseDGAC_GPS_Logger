@@ -118,6 +118,18 @@ border:5px solid  black ;
 border-radius:10px;
 font-weight: inherit;
 }
+
+.load:link ,.load:visited{
+font-size:inherit;
+font-family:inherit;
+border:5px solid  black ;
+border-radius:10px;
+font-weight: inherit;
+text-decoration: none;
+color: inherit;
+padding: 2px 4px;
+}
+
 hr{
 height:4px;
 border-width:0;

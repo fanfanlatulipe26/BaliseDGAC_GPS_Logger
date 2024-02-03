@@ -8,7 +8,7 @@
 
 // Pending pour télémesure :
 //  - refaire compil esp8266
-//  - validation html
+//  + validation html
 //    - cockpit
 //    - trace
 //    - options

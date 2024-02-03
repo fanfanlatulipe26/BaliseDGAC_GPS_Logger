@@ -283,11 +283,11 @@ void listSPIFFS(String message) {
       response += " value='" + fileName + "'>" + fileName + "</button></td>";
       response += "<td id='L" + String(nbrFiles) + "'>" + (String)f.size() + "</td>\n";
       response += "<td><button class='b2' type='submit' onclick='return D1(\"" + fileName + "\")' name='delete' value='" + fileName + "'>Effacer</button></td>\n";
-      response += "<td><a href='" + fileName + "' download='" + fileName.substring(1) +
+      response += "<td><a class='b1 load' href='" + fileName + "' download='" + fileName.substring(1) +
                   //     ((fileName.charAt(0) == '2' ) ? ("." + String(preferences.formatTrace)) : "" ) +
                   // Les fichier de trace commencent tous par l'année /2xxx .   (/ rajouté pour ESP32 ...)
                   ((fileName.charAt(1) == '2') ? ("." + String(preferences.formatTrace)) : "") +  // fichier trace /2021-
-                  "'><button class='b1' type='button'>T&eacute;l&eacute;charger </button></a></td></tr>\n";
+                  "'>T&eacute;l&eacute;charger</a></td></tr>\n";
     }
     server.sendContent(response);
 #ifdef ESP32
