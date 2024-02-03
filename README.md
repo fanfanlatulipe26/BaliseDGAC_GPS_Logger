@@ -91,7 +91,7 @@ Il est possible, par l'interface Web, de protéger cette fonction par un mot de 
 ## **Environnement logiciel. Compilation**
 Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2024: ESP32 2.0.11, ESP8266 3.1.2)  
 La librairie TinyGPSP++ ne fait pas partie des packages standards et doit être installée. Chercher TinyGPSPlus dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/mikalhart/TinyGPSPlus).   
-La librairie IBusBM doit être aussi installée si on souhaite mettre en oeuvre la télémetrie FLySky iBus.(chercher IBusBM dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/bmellink/IBusBM).   
+La librairie IBusBM doit être aussi installée si on souhaite mettre en oeuvre la télémetrie FLySky iBus. Chercher IBusBM dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/bmellink/IBusBM).   
 
 Avant de compiler il faut choisir quelques options dans le fichier **fs\_options.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
 Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
