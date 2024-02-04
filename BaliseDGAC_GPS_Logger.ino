@@ -19,7 +19,7 @@
 /*------------------------------------------------------------------------------
 
   Author: FS
-  Platforms: ESP8266 / ESP32 / ESP32-C3
+  Platforms: ESP8266 / ESP32 / ESP32-S3 / ESP32-C3
   Language: C++/Arduino
   Basé sur :
   https://github.com/dev-fred/GPS_Tracker_ESP8266
@@ -43,7 +43,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #else
-#error "Il faut utiliser une carte ESP32 ou ESP8266"
+#error "Il faut utiliser une carte ESP32, ESP32C3, ESP32S3 ou ESP8266"
 #endif
 
 #include <LittleFS.h>

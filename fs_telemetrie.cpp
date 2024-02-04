@@ -44,8 +44,7 @@ void iBusInit() {
   gps_alt = iBus.addSensor(IBUS_SENSOR_TYPE_GPS_ALT, 4);
   gps_head = iBus.addSensor(IBUS_SENSOR_TYPE_CMP_HEAD, 2);
   gps_speed = iBus.addSensor(IBUS_SENSOR_TYPE_GROUND_SPEED, 2);
-  gps_spe = iBus.addSensor(IBUS_SENSOR_TYPE_SPE, 2);  //
-#define IBUS_SENSOR_TYPE_SPE 0x7e  // Speed 2bytes km/h
+  // gps_spe = iBus.addSensor(IBUS_SENSOR_TYPE_SPE, 2);  //
   //  gps_status = iBus.addSensor(IBUS_SENSOR_TYPE_GPS_STATUS, 2);  // en fait nombre de satellites sur 1er octete
   // gps_second = iBus.addSensor(IBUS_SENSOR_TYPE_RPM, 2);         // pour test ... On envoe le temps (seconde seulement)
 }
@@ -53,10 +52,10 @@ void iBusInit() {
 void iBusSetValue(TinyGPSPlus gps) {
   iBus.setSensorMeasurement(gps_lat, gps.location.lat() * 1E7);  //4bytes signed WGS84 in degrees * 1E7
   iBus.setSensorMeasurement(gps_lon, gps.location.lng() * 1E7);  // 4bytes signed WGS84 in degrees * 1E7
-  iBus.setSensorMeasurement(gps_alt, gps.altitude.value());     // en cm  . 4bytes signed!!! GPS alt m*100. 
-  iBus.setSensorMeasurement(gps_head, gps.course.deg());        // en d°
-  iBus.setSensorMeasurement(gps_speed, gps.speed.mps() * 100);  // en m/s *100
-  iBus.setSensorMeasurement(gps_spe, gps.speed.kmph());  //  Speed 2bytes km/h
+  iBus.setSensorMeasurement(gps_alt, gps.altitude.value());      // en cm  . 4bytes signed!!! GPS alt m*100.
+  iBus.setSensorMeasurement(gps_head, gps.course.deg());         // en d°
+  iBus.setSensorMeasurement(gps_speed, gps.speed.mps() * 100);   // en m/s *100
+  //  iBus.setSensorMeasurement(gps_spe, gps.speed.kmph());          //  Speed 2bytes km/h
   //  iBus.setSensorMeasurement(gps_status, gps.satellites.value() << 8); // nbr de satelite le 1er octet (x12 ici). Le 2éme ??
   //  iBus.setSensorMeasurement(gps_second, gps.time.second());            // pour faire bouger ...
 }

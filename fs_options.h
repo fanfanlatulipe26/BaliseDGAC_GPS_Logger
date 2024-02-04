@@ -74,7 +74,7 @@
 //--------------------------------------------------------------------------------------------------------------------------
 // Pour ESP01-C3  , même format que ESP01 mais avec un ESP32-C3
 // LILYGO® TTGO T-01C3 ESP32-C3
-/*
+
 #define GPS_RX_PIN 8           // D1 Brancher le fil Tx du GPS .
 #define GPS_TX_PIN 9            // D2 Brancher le fil Rx du GPS .
 #define pinFactoryReset 2
@@ -88,7 +88,7 @@
 // On perdra le debug sur Serial
 #define iBus_RX 20   // vers pin iBus sensor du recepteur Flysky
 #define iBus_TX 21   // vers pin iBus sensor du recepteur Flysky
-*/
+
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour module  ESP3-C3-32S-kit  NodeMCU-Series
 /*
@@ -110,7 +110,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour ESP32 ESP32 Dev Kit
-
+/*
 #define GPS_RX_PIN 4           // D1 Brancher le fil Tx du GPS . 
 #define GPS_TX_PIN 2            // D2 Brancher le fil Rx du GPS .
 //#define pinLed 2              // builtin LED du module 32 Dev Kit
@@ -122,7 +122,7 @@
 #define iBus_RX 16   // (label RX2) exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
 #define iBus_TX 17   // (label TX2)  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
 
-
+*/
 // ------------------------------------------------------------------------------------------------
 
 #endif  /* FS_OPTIONS_H */
