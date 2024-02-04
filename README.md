@@ -204,7 +204,6 @@ Pour une mise à jour, il suffit de sélectionner le fichier résultat de compil
 - IDE 2.2.y C:\Users\XXXXX\AppData\Local\Temp\\arduino\sketches\xxxxxxxxyyyyyyyyyyzzzzzzzz/BaliseDGAC_GPS_Logger.ino.bin
 (Sélectionner le répertoire arduino\sketches\xxxxxxxxyyyyyyyyyyzzzzzzzz... qui a la date de modification la plus récente)
 
-
 # Mode Récepteur
 |   <img src="/img/recepteur_1.png" width="400"> | <img src="/img/detail_balise.jpg" width="400">  |
 | ------------ | ------------ |
