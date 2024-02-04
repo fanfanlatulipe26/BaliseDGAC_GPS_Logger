@@ -11,7 +11,7 @@ La balise a deux modes de fonctionnement:
 
 ## **Crédit:**
 Le cœur du logiciel qui transmet la trame spécifique d’identification à distance pour drones et aéromodèles est basé sur la version [GPS\_Tracker\_ESP8266V1\_WEB](https://github.com/dev-fred/GPS_Tracker_ESP8266) de "dev-fred" ainsi que sur les travaux de ["Tr@nquille"](https://www.tranquille-informatique.fr/modelisme/divers/balise-dgac-signalement-electronique-a-distance-drone-aeromodelisme.html)  
-Les parties interface WEB et enregistrement de traces ont été rajoutées.
+Les parties interface WEB, enregistrement de traces, tracker GSM, télémétrie ... ont été rajoutées.
 
 
 ## **Principales caractéristiques:**
@@ -30,10 +30,10 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
 <figure>
-    <img src="/img/schéma_2_schéma_1.jpg" width="500">
+    <img src="/img/schéma_2_schéma_1.jpg" width="600">
     <figcaption>Réalisation avec répondeur GSM optionnel</figcaption>
 </figure><figure>
-   <img src="/img/schéma_ibus_schéma.jpg" width="500"> 
+   <img src="/img/schéma_ibus_schéma.jpg" width="600"> 
     <figcaption>Réalisation avec télémétrie iBus</figcaption>
 </figure>
 
@@ -98,7 +98,7 @@ Avant de compiler il faut choisir quelques options dans le fichier **fs\_options
 Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
 Le choix du type de processeur est fait  lors de la compilation en sélectionnant le bon type de carte dans l'IDE Arduino
 
-### **Modules GPS**
+## **Modules GPS**
 
 Choisir dans le fichier fs\_options.h  une des lignes :
 
@@ -109,7 +109,7 @@ ou
 Le logiciel a été testé avec un GPS QUECTEL L80 et un Beitian BN-880 (dont la partie GPS est compatible avec un BN-180,BN-220, BN-280)   
 Les GPS qui utilisent les commandes style $PMTK251, $PMTK220, $PMTK314 (cas de Quectel, GlobalTop/Sierra Wireless, …) peuvent sûrement être utilisés.
 
-### **Utilisation d'un LED**
+## **Utilisation d'un LED**
 Si un LED est donné dans la configuration par */#define pinLed xx*  (voir fichier fs\_options.h)  son clignotement est rythmé par l'émission des trames d'identification. 
 - En absence de fix GPS: clignotement lent, période de 6 secondes.
 - Après un fix GPS: flash très rapide lors de l'envoi d'une trame. (le flash est un peu plus long si la balise est en mode économie d'énergie/mise en sommeil)
@@ -139,8 +139,8 @@ Un fichier peut être téléchargé localement pour analyse fine.
 ## **Fenêtre « Préférences »**
 Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraîchissement), la gestion du point d’accès Wi-Fi.  
   <br clear="both">  
-   <img src="/img/preferences_1.jpg" align=left width="500"> 
-   <img src="/img/preferences_2.jpg" align=right width="500">
+   <img src="/img/preferences_1.jpg" align=left width="400"> 
+   <img src="/img/preferences_2.jpg" align=right width="400">
   <br clear="both">  
   
 ### **Format de la trace GPS**
