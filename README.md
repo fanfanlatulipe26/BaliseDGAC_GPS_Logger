@@ -56,7 +56,7 @@ Les noms des pins sur le module processeur ESP correspondent aux noms des pins q
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
-- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3)
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3). [Voir ici quelques remarques](#ESP32C3)
 - ESP32-S3<br>
 
 **Modules GPS supportés:**
@@ -87,6 +87,19 @@ L'interface utilisateur affiche l'identifiant courant de la balise qui devra êt
 Il est possible d'inclure dans la réalisation un module GSM permettant d'envoyer sur demande un SMS de localisation.
 Par défaut, si la balise reçoit un SMS elle répond par un SMS contenant un lien avec les dernières coordonnées GPS valides connues. Ce lien ouvre Google Maps avec un pointeur sur la position du modèle.
 Il est possible, par l'interface Web, de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
+
+## **Télémétrie FlySky / iBus**
+Testé avec un récepteur FS-iA6B et un émetteur avec le logiciel openTX.  
+L’option fs_iBus donnée dans le  fichier fs_options.h permet de transformer la balise en un ensemble de capteurs FlySky/iBus. Seront transmises les informations suivantes venant du GPS:  
+-	Les coordonnées GPS 
+-	L’altitude en mètre
+-	Le cap (0..360 deg, 0=nord)
+-	La vitesse
+-	
+2 broches d’entrées/sorties du processeur, iBus_RX et iBus_TX, définies dans le fichier fs_options  sont utilisées pour la liaison avec le récepteur. Le fils iBus, venant du récepteur RC est relié directement à iBus_RX, et par l’intermédiaire d’une diode (genre 1N4148) à iBux_TX (cathode vers iBUX_TX).  Voir  un exemple de câblage ci-dessus.   
+La balise ne peut pas être utilisée dans une "daisy-chain" de capteurs. 
+L’option télémétrie n’est supportée que sur les réalisations à base d’ESP32 (famille) et est incompatible avec l’option GSM.  
+La mise en œuvre de la télémétrie peut être contrôlée par l’interface Web.  
 
 ## **Environnement logiciel. Compilation**
 Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2024: ESP32 2.0.11, ESP8266 3.1.2)  
@@ -195,7 +208,19 @@ Pour une mise à jour, il suffit de sélectionner le fichier résultat de compil
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
   Un click sur un identifiant de balise ouvre une page contenant des détails sur les valeurs émises.   
   Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise hors tension /en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+
+<a name="ESP32C3">  
   
+# Remarque sur l’utilisation d’un ESP32C3 avec option répondeur GSM ou télémétrie iBus
+Le logiciel de la balise utilise une liaison série hardware (UART) pour communiquer avec le GPS.
+De même il a besoin d’une autre liaison série hardware pour communiquer avec le module GSM, ou avec le iBus du récepteur.
+L’ESP32C3 a uniquement 2 UARTs, 0 et 1. L’UART 1 est utilisé pour le GPS, et l’UART 0 est normalement utilisé par l’IDE Arduino pour télécharger le logiciel.  
+Des module de petites tailles comme le LILYGO® TTGO T-01C3 ESP32-C3 ont peu de broches exposées et imposent de réutiliser des broches "réservées" à l’UART0/IDE.
+Si on choisit l’option GSM ou iBus le logiciel utilise alors l’UART 0 et il devient difficile de télécharger le logiciel avec l’IDE.  
+Il est conseillé avant de faire le câblage définitif, de télécharger une version simple du logiciel (sans GSM ou iBus) afin de faire quelques tests. Les versions suivantes seront chargées par OTA, sans lien direct avec l’IDE.  
+Dans tous les cas on perdra la sortie de debug "Serial Monitor".
+Le problème ne se pose pas avec un ESP32 ou un ESP32S3 (3 UARTs disponibles)
+
 <a name="SIM800L">
 
 # Remarques sur le module GSM SIM800L  
