@@ -1,24 +1,6 @@
-# **Travail 4.2**
-Rapide mise à jour ...
-Ce README n'est pas à jour ....
+# **BaliseDGAC\_GPS\_Logger V4.2 Emetteur/Récepteur/Tracker GSM/Télémétrie FlySky iBus**
 
-- Possibilité de changer l’identificateur de la balise dans la page "Préférences" de l’interface Web.
-
-- Ajout d'une option pour telemetrie FlySky iBus (dans fs_options.h ). En partie testé sur ESP32 et ESP32C3
-
-Utilise la librairie IBusBM.h (disponible par le gestionnaire de bibliothèques de l’IDE) 
-
-Attention : il faut rajouter une diode la sortie du récepteur RC et les pins Arduino  (voir https://github.com/bmellink/IBusBM ) 
-
-Avec un ESP32C3, l’utilisation de l’option télémétrie ou GSM condamne l’utilisation de la console IDE . Le logiciel peut être chargé par OTA.
-
-
-- Code général de la balise testé en partie sur ESP32S3  (partie Wifi .)
-
-
-# **BaliseDGAC\_GPS\_Logger V4.0 Emetteur/Récepteur/Tracker GSM**
-
-Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation.
+Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation. Télémétrie FlySky IBus possible pour un retour des informations GPS.
 La balise a deux modes de fonctionnement:
 - Mode émetteur
 - Mode récepteur pour contrôler le fonctionnement des balises du voisinage
@@ -34,14 +16,16 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 ## **Principales caractéristiques:**
 - Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'[arrêté du 27 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000039685188) (loi drone …).
-- Mode émetteur ou récepteur.
-- Possibilité d'inclure un module GSM pour recevoir un SMS de localisation facilitant la recherche du modèle en cas de perte.
-- Code compatible ESP32/ ESP32-C3 / ESP8266. 
-- Interface Web accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
-- Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
+- Mode **émetteur ou récepteur**.
+- Possibilité d'inclure un module GSM pour recevoir un **SMS de localisation** facilitant la recherche du modèle en cas de perte.
+- Possibilité de faire des retours de **télémétrie dans un environnement FlySky iBus**.
+- Code compatible ESP32/ ESP32-C3 / ESP32-S3 / ESP8266. 
+- **Interface Web** accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
+- **Portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
 - Possibilité de coupure du point d’accès pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
-- Fonction d’enregistrement des traces GPS dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
+- Fonction **d’enregistrement des traces GPS** dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
 - Fonction de mise à jour du logiciel à travers la liaison Wi-Fi (OTA Over The Air).
+- **Possibilité de changer l'identificateur de la balise**.
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
@@ -54,7 +38,8 @@ Les noms des pins sur le module processeur ESP correspondent aux noms des pins q
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
 - ESP32
-- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3) <br>
+- ESP32-C3 (par exemple module TTGO T-01C3 ESP32-C3). [Voir ici quelques remarques](#ESP32C3)
+- ESP32-S3<br>
 
 **Modules GPS supportés:**
 - Quectel L80 (et GPS style base chipset:MediaTek MT3339 ??)
@@ -76,18 +61,32 @@ Le format de l'identifiant diffusé est le suivant:
 - Un code sur 24 caractères, sensé représenter le numéro de série de la balise.
 
 Il est donc du genre: "000FSB000000000000YYYYYYYYYYYY"  
-Le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.   
-L'interface utilisateur affiche l'identifiant de la balise qui devra être enregistré sur le site AlphaTango.
+Par défaut, le logiciel remplace les 12 derniers caractères par l'adresse MAC de la balise assurant l'unicité de l'identifiant.  
+Il est possible, par l'interface Web, de changer les 24 derniers caractères de l'identifiant.  
+L'interface utilisateur affiche l'identifiant courant de la balise qui devra être enregistré sur le site AlphaTango.
 
 ## **SMS de localisation**
 Il est possible d'inclure dans la réalisation un module GSM permettant d'envoyer sur demande un SMS de localisation.
 Par défaut, si la balise reçoit un SMS elle répond par un SMS contenant un lien avec les dernières coordonnées GPS valides connues. Ce lien ouvre Google Maps avec un pointeur sur la position du modèle.
 Il est possible, par l'interface Web, de protéger cette fonction par un mot de passe: seul un SMS envoyé à la balise et contenant ce mot de passe provoquera l'envoi des coordonnées GPS du modèle. 
 
+## **Télémétrie FlySky / iBus**
+Testé avec un récepteur FS-iA6B et un émetteur avec le logiciel openTX.  
+L’option fs_iBus donnée dans le  fichier fs_options.h permet de transformer la balise en un ensemble de capteurs FlySky/iBus. Seront transmises les informations suivantes venant du GPS:  
+-	Les coordonnées GPS 
+-	L’altitude en mètre
+-	Le cap (0..360 deg, 0=nord)
+-	La vitesse
+-	
+2 broches d’entrées/sorties du processeur, iBus_RX et iBus_TX, définies dans le fichier fs_options  sont utilisées pour la liaison avec le récepteur. Le fils iBus, venant du récepteur RC est relié directement à iBus_RX, et par l’intermédiaire d’une diode (genre 1N4148) à iBux_TX (cathode vers iBUX_TX).  Voir  un exemple de câblage ci-dessus.   
+La balise ne peut pas être utilisée dans une "daisy-chain" de capteurs. 
+L’option télémétrie n’est supportée que sur les réalisations à base d’ESP32 (famille) et est incompatible avec l’option GSM.  
+La mise en œuvre de la télémétrie peut être contrôlée par l’interface Web.  
+
 ## **Environnement logiciel. Compilation**
-Les tests ont été faits dans l'environnement IDE Arduino 18.19.  
-Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Septembre 2022: ESP32 2.0.5, ESP8266 3.0.2)  
-Seule la librairie TinyGPS++ ne fait pas partie des packages standards ESP32/ESP8266 et doit être installée.
+Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2024: ESP32 2.0.11, ESP8266 3.1.2)  
+La librairie TinyGPSP++ ne fait pas partie des packages standards et doit être installée. Chercher TinyGPSPlus dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/mikalhart/TinyGPSPlus).   
+La librairie IBusBM doit être aussi installée si on souhaite mettre en oeuvre la télémetrie FLySky iBus. Chercher IBusBM dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/bmellink/IBusBM).   
 
 Avant de compiler il faut choisir quelques options dans le fichier **fs\_options.h** (choix du GPS, choix des ports de communication pour le GPS, choix d’inclure ou non la mise à jour par OTA, la disponibilté d'un LED accessible dans le montage,  etc. …). Voir les commentaires.   
 Le mode "récepteur" n'est pas supporté pour l'ESP8266.   
@@ -191,7 +190,19 @@ Pour une mise à jour, il suffit de sélectionner le fichier résultat de compil
 Le mode récepteur permet de contrôler le fonctionnement des balises actives du voisinage. Une page liste les identifiants des balises les plus actives.  
   Un click sur un identifiant de balise ouvre une page contenant des détails sur les valeurs émises.   
   Le retour en mode « Emetteur » doit obligatoirement se faire en utilisant le bouton « Retour en mode émetteur » ou par un redémarrage complet de la balise (mise hors tension /en tension). Ne pas utiliser le bouton « retour » du navigateur Web.
+
+<a name="ESP32C3">  
   
+# Remarque sur l’utilisation d’un ESP32C3 avec option répondeur GSM ou télémétrie iBus
+Le logiciel de la balise utilise une liaison série hardware (UART) pour communiquer avec le GPS.
+De même il a besoin d’une autre liaison série hardware pour communiquer avec le module GSM, ou avec le iBus du récepteur.
+L’ESP32C3 a uniquement 2 UARTs, 0 et 1. L’UART 1 est utilisé pour le GPS, et l’UART 0 est normalement utilisé par l’IDE Arduino pour télécharger le logiciel.  
+Des module de petites tailles comme le LILYGO® TTGO T-01C3 ESP32-C3 ont peu de broches exposées et imposent de réutiliser des broches "réservées" à l’UART0/IDE.
+Si on choisit l’option GSM ou iBus le logiciel utilise alors l’UART 0 et il devient difficile de télécharger le logiciel avec l’IDE.  
+Il est conseillé avant de faire le câblage définitif, de télécharger une version simple du logiciel (sans GSM ou iBus) afin de faire quelques tests. Les versions suivantes seront chargées par OTA, sans lien direct avec l’IDE.  
+Dans tous les cas on perdra la sortie de debug "Serial Monitor".  
+Le problème ne se pose pas avec un ESP32 ou un ESP32S3 (3 UARTs disponibles)
+
 <a name="SIM800L">
 
 # Remarques sur le module GSM SIM800L  
