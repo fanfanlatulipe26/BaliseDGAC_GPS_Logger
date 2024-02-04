@@ -29,8 +29,14 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
+<figure>
+    <img src="/img/schéma_2_schéma_1.jpg" width="500">
+    <figcaption>Réalisation avec répondeur GSM optionnel</figcaption>
+</figure><figure>
+   <img src="/img/schéma_ibus_schéma.jpg" width="500"> 
+    <figcaption>Réalisation avec télémétrie iBus</figcaption>
+</figure>
 
-<img src="/img/schéma_2_schéma_1.jpg" width="600">  
 Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
 Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définis dans le fichier fs_options.h (voir plus loin)
 
@@ -77,7 +83,7 @@ L’option fs_iBus donnée dans le  fichier fs_options.h permet de transformer l
 -	L’altitude en mètre
 -	Le cap (0..360 deg, 0=nord)
 -	La vitesse
--	
+  
 2 broches d’entrées/sorties du processeur, iBus_RX et iBus_TX, définies dans le fichier fs_options  sont utilisées pour la liaison avec le récepteur. Le fils iBus, venant du récepteur RC est relié directement à iBus_RX, et par l’intermédiaire d’une diode (genre 1N4148) à iBux_TX (cathode vers iBUX_TX).  Voir  un exemple de câblage ci-dessus.   
 La balise ne peut pas être utilisée dans une "daisy-chain" de capteurs. 
 L’option télémétrie n’est supportée que sur les réalisations à base d’ESP32 (famille) et est incompatible avec l’option GSM.  
@@ -131,8 +137,10 @@ Un fichier peut être téléchargé localement pour analyse fine.
 <a name="warning1">**Attention :** dans certains cas (sous Android ?),  le navigateur ouvert automatiquement lors de la connexion au portail captif ne permet pas de faire des téléchargements de fichiers. Il faut alors utiliser explicitement le navigateur standard. Ceci ne se produit pas sur un PC Windows.
 
 ## **Fenêtre « Préférences »**
-   <img src="/img/preferences.jpg" align=left width="400"> 
 Cette fenêtre permet de choisir le format des  traces GPS, la configuration du GPS (vitesse/rafraîchissement), la gestion du point d’accès Wi-Fi.  
+  <br clear="both">  
+   <img src="/img/preferences_1.jpg" align=left width="500"> 
+   <img src="/img/preferences_2.jpg" align=right width="500">
   <br clear="both">  
   
 ### **Format de la trace GPS**
@@ -152,7 +160,7 @@ La vitesse de transmission doit être augmentée si une fréquence de rafraîchi
 
 Si on veut enregistrer une trace fine, avec des points proches, il est nécessaire de choisir une fréquence de rafraîchissement élevée (par exemple si on utilise la balise pour une recherche de vitesse maximum sur de courtes périodes de temps). Le choix 19200Bds et 10Hz est un bon compromis.
 
-A noter que si on utilise un ESP8266, la liaison série avec le GPS est entièrement émulée par le logiciel avec parfois des problèmes de qualité de transmission pour des vitesses élevées. Avec un ESP32, la liaison est gérée bien plus efficacement par le matériel
+A noter que si on utilise un ESP8266, la liaison série avec le GPS est entièrement émulée par le logiciel avec parfois des problèmes de qualité de transmission pour des vitesses élevées. Avec un ESP32, la liaison est gérée bien plus efficacement par le matériel.  
 
 ### **Gestion du point d'accès Wi-Fi**
 A la mise sous tension, la balise crée un point d'accès Wi-Fi ouvert dont le nom par défaut est BALISE\_adresse-Mac (genre BALISE\_60:55:F9:71:59:5C)
@@ -169,8 +177,20 @@ Il est possible de couper complètement l'activité Wi-Fi de la balise entre deu
 
 Il est à noter que la mise en sommeil de la balise entraîne un retard  de l'ordre de 20ms entre le moment où la trame doit être émise et son émission réelle. 
 
-**Remarque :** Dans le cas d’une balise construite avec un ESP8266, il est important d’utiliser une version du package de base ESP8266 supérieure à 3.0.0 car sinon ce retard  atteint 300ms ou plus, ce qui peut être rédhibitoire si on veut en même temps  enregistrer des traces GPS  avec une haute résolution …
+**Remarque :** Dans le cas d’une balise construite avec un ESP8266, il est important d’utiliser une version du package de base ESP8266 supérieure à 3.0.0 car sinon ce retard  atteint 300ms ou plus, ce qui peut être rédhibitoire si on veut en même temps  enregistrer des traces GPS  avec une haute résolution …  
 
+### **Gestion de la télémétrie FlySky / iBus**
+Il est possible de couper ou activer la télémesure.  
+
+### **Gestion de l'identificateur de la balise**
+**Aux risques et périls de l'utilisateur !!** (rester en règle avec AlphaTango ...)   
+Par défaut l'identificateur de la balise est construit à partir de l'adresse MAC du controleur Wifi et est donc unique.
+Il est du genre: "000FSB000000000000YYYYYYYYYYYY"  
+Il est possible, par l'interface Web, de changer les 24 derniers caractères de l'identifiant. Les "espaces" et caractères accentués sont interdits. L'identificateur sera complété automatiquement à gauche par des 0.  
+L'interface utilisateur affiche l'identifiant courant de la balise qui devra être enregistré sur le site AlphaTango.    
+Pour rétablir l'identifiant par défaut, il suffit d'effacer complètement le champ identificateur et de soumettre cette modification.
+
+Le changement de l'identificateur permet le déplacement de la balise d'un modèle à l'autre, même si ces modèles ne sont pas du même type (avions, drones, planeurs...) et de la même gamme de poids: il faut simplement enregistrer le bon identificateur pour le bon modèle dans AlphaTango et changer l'identificateur de la balise lors de l'installation dans le modèle .....
 
 ### **Bouton  « Reset » :** 
 Redémarre la balise 
