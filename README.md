@@ -257,6 +257,9 @@ Scénario dutilisation:
 Les traces GPS enregistrées permettent de retrouver un historique des essais.
 
  # Principales modifications
+- 4.2
+  - rajout télémétrie FlySky iBus
+  - possibilité de changer l'identificateur de la balise
 - 4.0 final. Pas de changements
 - 4.0b2
   - suppression de warning
