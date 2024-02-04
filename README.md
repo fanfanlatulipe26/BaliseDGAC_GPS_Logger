@@ -1,22 +1,4 @@
-# **Travail 4.2**
-Rapide mise à jour ...
-Ce README n'est pas à jour ....
-
-- Possibilité de changer l’identificateur de la balise dans la page "Préférences" de l’interface Web.
-
-- Ajout d'une option pour telemetrie FlySky iBus (dans fs_options.h ). En partie testé sur ESP32 et ESP32C3
-
-Utilise la librairie IBusBM.h (disponible par le gestionnaire de bibliothèques de l’IDE) 
-
-Attention : il faut rajouter une diode la sortie du récepteur RC et les pins Arduino  (voir https://github.com/bmellink/IBusBM ) 
-
-Avec un ESP32C3, l’utilisation de l’option télémétrie ou GSM condamne l’utilisation de la console IDE . Le logiciel peut être chargé par OTA.
-
-
-- Code général de la balise testé en partie sur ESP32S3  (partie Wifi .)
-
-
-# **BaliseDGAC\_GPS\_Logger V4.0 Emetteur/Récepteur/Tracker GSM/Télémétrie FlySky iBus**
+# **BaliseDGAC\_GPS\_Logger V4.2 Emetteur/Récepteur/Tracker GSM/Télémétrie FlySky iBus**
 
 Version d'une balise de signalisation style DGAC pour  [signalisation de drones et aéromodèles](https://www.ecologie.gouv.fr/sites/default/files/notice_signalement_electronique.pdf) avec possibilité d'enregistrement des traces GPS et incluant optionnellement un module GSM permettant de recevoir un SMS de localisation. Télémétrie FlySky IBus possible pour un retour des informations GPS.
 La balise a deux modes de fonctionnement:
