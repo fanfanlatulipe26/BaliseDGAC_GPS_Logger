@@ -37,10 +37,12 @@
 //--------------------------------------------------------------------------------------------------------
 //  Options logiciel. 
 #define fs_OTA        // pour permettre une mise a jour OTA pour logiciel 
-//#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
+#define fs_RECEPTEUR  // pour inclure aussi le code récepteur (uniquement pour une carte à base ESP32 / ESP32C3)
 //#define repondeurGSM  // pour envoyer dans un SMS la position avec une module GSM SIM800L (uniquement pour une carte à base ESP32 / ESP32C3)et incompatible avec fs_iBus
+//                   Il faudra aussi définir GSM_RX et GSM_TX (voir exemples plus loin)
 #define fs_STAT     // pour avoir une page de statisques,durée exécution, erreurs GPS, etc ...Utile en phase développement ..
-//#define fs_iBus // pour envois informations GPS par telemetrie type FlySky / iBUS (incompatible avec repondeurGSM)
+#define fs_iBus // pour envois informations GPS par telemetrie type FlySky / iBUS (incompatible avec repondeurGSM)
+//                  Il faudra aussi définir iBus_RX et iBus_TX (voir exemples plus loin)
 //--------------------------------------------------------------------------------------------------------
 //  Options choix du type de GPS
 //--------------------------------------------------------------------------------------------------------
@@ -52,11 +54,11 @@
 //  Options configuration matérielle
 //--------------------------------------------------------------------------------------------------------
 // Pour ESP01 8266
-
+/*
 #define GPS_RX_PIN 0            // D1 Brancher le fil Tx du GPS . FS pour ESP01
 #define GPS_TX_PIN 2            // D2 Brancher le fil Rx du GPS . FS pour ESP01.(pour envoyer des commande )
 #define pinFactoryReset 2 
-
+*/
 
 //--------------------------------------------------------------------------------------------------------
 // Pour 8266 ESP8266 D1 MINI Pro 
@@ -64,7 +66,6 @@
 #define GPS_RX_PIN 5 // sur pin 5, label D1, brancher le fil Tx du GPS .
 #define GPS_TX_PIN 4 // sur pin 4, label D2, brancher le fil Rx du GPS .(pour envoyer des commandes )
 
-/*
 #define GSM_RX 16   // sur pin 16, label D0, vers RX du module GSM SIM800L
 #define GSM_TX 14   // sur pin 14, label D5, vers TX du module GSM SIM800L
 //#define pinFactoryReset 2 
@@ -109,7 +110,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------
 //  Pour ESP32 ESP32 Dev Kit
-/*
+
 #define GPS_RX_PIN 4           // D1 Brancher le fil Tx du GPS . 
 #define GPS_TX_PIN 2            // D2 Brancher le fil Rx du GPS .
 //#define pinLed 2              // builtin LED du module 32 Dev Kit
@@ -121,7 +122,7 @@
 #define iBus_RX 16   // (label RX2) exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
 #define iBus_TX 17   // (label TX2)  exemple pour ESP32 Dev kit. vers pin iBus sensor du recepteur Flysky
 
-*/
+
 // ------------------------------------------------------------------------------------------------
 
 #endif  /* FS_OPTIONS_H */

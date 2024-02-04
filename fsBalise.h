@@ -22,7 +22,7 @@
 
 #include <TinyGPS++.h>
 
-const char versionSoft[] = "4.1b1";
+const char versionSoft[] = "4.2";
 #define DEBUG_HEAP false
 //#define DEBUG_HEAP true
 #ifndef ESP32
