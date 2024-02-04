@@ -16,16 +16,16 @@ Les parties interface WEB et enregistrement de traces ont été rajoutées.
 
 ## **Principales caractéristiques:**
 - Génération des signaux de signalisation électronique pour les aéromodèles, suivant les prescriptions de l'[arrêté du 27 décembre 2019](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000039685188) (loi drone …).
-- Mode émetteur ou récepteur.
-- Possibilité d'inclure un module GSM pour recevoir un SMS de localisation facilitant la recherche du modèle en cas de perte.
-- Possibilité de faire des retours de télémétrie dans un environnement FlySky iBus.
+- Mode **émetteur ou récepteur**.
+- Possibilité d'inclure un module GSM pour recevoir un **SMS de localisation** facilitant la recherche du modèle en cas de perte.
+- Possibilité de faire des retours de **télémétrie dans un environnement FlySky iBus**.
 - Code compatible ESP32/ ESP32-C3 / ESP32-S3 / ESP8266. 
-- Interface Web accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
-- Portail captif: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
+- **Interface Web** accessible sur un point d'accès (AP) créé par la balise. Gestion et contrôle du bon fonctionnement de la balise. Gestion des préférences …
+- **Portail captif**: lors de la connexion au réseau créé par la balise le navigateur est lancé et on se retrouve directement dans l’interface utilisateur, sans besoin de donner une adresse.
 - Possibilité de coupure du point d’accès pour ne pas interférer avec les signaux radio de télécommande et limiter fortement la consommation de la balise.
-- Fonction d’enregistrement des traces GPS dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
+- Fonction **d’enregistrement des traces GPS** dans le système de fichiers de l’ESP avec interface Web de gestion. Téléchargement de traces en format CSV et/ou GPX.
 - Fonction de mise à jour du logiciel à travers la liaison Wi-Fi (OTA Over The Air).
-- Possibilité de changer l'identificateur de la balise.
+- **Possibilité de changer l'identificateur de la balise**.
 
 Cette balise peut être utilisée en dehors du contexte signalisation d'aéromodèles pour faire par exemple des tests de vitesse lors de la mise au point de mobiles, de bateaux du type racers/offshore, de modèles de voitures RC etc …[Exemple ici](#scenario)
 
@@ -200,7 +200,7 @@ L’ESP32C3 a uniquement 2 UARTs, 0 et 1. L’UART 1 est utilisé pour le GPS, e
 Des module de petites tailles comme le LILYGO® TTGO T-01C3 ESP32-C3 ont peu de broches exposées et imposent de réutiliser des broches "réservées" à l’UART0/IDE.
 Si on choisit l’option GSM ou iBus le logiciel utilise alors l’UART 0 et il devient difficile de télécharger le logiciel avec l’IDE.  
 Il est conseillé avant de faire le câblage définitif, de télécharger une version simple du logiciel (sans GSM ou iBus) afin de faire quelques tests. Les versions suivantes seront chargées par OTA, sans lien direct avec l’IDE.  
-Dans tous les cas on perdra la sortie de debug "Serial Monitor".
+Dans tous les cas on perdra la sortie de debug "Serial Monitor".  
 Le problème ne se pose pas avec un ESP32 ou un ESP32S3 (3 UARTs disponibles)
 
 <a name="SIM800L">
