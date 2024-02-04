@@ -199,8 +199,10 @@ Réinitialise le système de gestion de fichiers
 ### **Bouton « Maj OTA »**
 Permet une mise à jour très aisée du logiciel par la liaison Wi-Fi (au détriment de la mémoire réservée pour les fichiers traces, ce qui peut éventuellement être un problème avec  un module style ESP8266 avec peu de mémoire …)   
 Pour une mise à jour, il suffit de sélectionner le fichier résultat de compilation qui est  en général dans  
-  C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
+ - IDE 1.8.x C:\Users\XXXXX\AppData\Local\Temp\arduino\_build\_YYYYYY\le\_projet.ino.bin  
 (Sélectionner le répertoire arduino\_build\_... qui a la date de modification la plus récente)
+- IDE 2.2.y C:\Users\XXXXX\AppData\Local\Temp\\arduino\sketches\xxxxxxxxyyyyyyyyyyzzzzzzzz/BaliseDGAC_GPS_Logger.ino.bin
+(Sélectionner le répertoire arduino\sketches\xxxxxxxxyyyyyyyyyyzzzzzzzz... qui a la date de modification la plus récente)
 
 
 # Mode Récepteur
