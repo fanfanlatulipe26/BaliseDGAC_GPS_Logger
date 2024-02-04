@@ -1,38 +1,4 @@
 // BaliseDGAC_GPS_Logger   Balise avec enregistrement de traces et récepteur balise
-// 4.1b1 : rajout modif du drone_id
-// 4.1b0 : rajout telemetrie GPS ibus FlySky
-// 6/2023 v4.0b2
-//    -modif AsyncSMS pour enlever des warning / erreur avec nouvelles versions de compilateurs
-//    -pb include SoftwareSerial.h esp8266
-// 10/2022 v4.0b1
-
-// Pending pour télémesure :
-//  - refaire compil esp8266
-//  + validation html
-//    - cockpit
-//    - trace
-//    - options
-//    - recepteur
-//  + jeu de caractères pour password, commande SMS, nom de reseau, drone ID
-//  + age pas mis à jour dans recepteur esp32 ??
-//  + filtrage caractère dans ident balise et longueur 24??
-//  + attention aux include des libariies optionelles: mettre avec des ifdef ??
-//  +tester  font-weight: inherit; pour input et button pour recepteur.
-//  + faire de ibusfin ibus init (simple)
-//  + ne retrouve pas bien le GPS ??. Quid quand pas de trafic GPS ??
-//     Refaire un init vitesse & Co ?? : semble OK. ENvoie la dernière valeur GPS valide,idem dans trame.
-//  - semble OK avec mini ESP32C3
-//  + essais sans timer pour iBus et etude stats.
-//      l'enregistrement de la trace ralenti la telemesure mais ne la casse ps.
-//  + crash si on utilise le timer 0 pour iBusBM  si initialisation avant init du wifi
-//      .. Ok sans timer avec appel de loop
-//      Ok si init iBus apres Wifi & Co, avec timer 0: non des pbs. Oublier timer pour esp32
-//  + attention lecture gps.xx dans iBus qui change les flags updated ???????????
-//  + ne pas envoyer de données GPS si les données ne sont pas valides ??.: au debut 0, sinon la dernière conneue
-//  + Voir ce qu'il se passe dans la télémétrie si le fix est perdu ??: OK ongarde la dernière connue
-//  + essais ESP32S3
-//  - voir pour utiliser les 2 uarts de l'esp8266
-
 //  Choisir la configuration du logiciel balise dans le fichier fs_options.h
 //    (pins utilisées pour le GPS,le GSM, option GPS, etc ...)
 
