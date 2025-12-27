@@ -91,6 +91,8 @@ La mise en œuvre de la télémétrie peut être contrôlée par l’interface W
 
 ## **Environnement logiciel. Compilation**
 Il est impératif d'avoir les environnements les plus récents pour ESP8266 et ESP32. (Février 2024: ESP32 2.0.11, ESP8266 3.1.2)  
+**Attention:** Les options *Télémétrie FlySky / iBus* et *GSM / SMS de localisation* ne peuvent pas être compilées avec un environnement  ESP32 3.x.x (erreurs de compilation concernant l'utilisation de timers.) Il faut donc utiliser une version récente de ESP32 2.x.x.  
+
 La librairie TinyGPSP++ ne fait pas partie des packages standards et doit être installée. Chercher TinyGPSPlus dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/mikalhart/TinyGPSPlus).   
 La librairie IBusBM doit être aussi installée si on souhaite mettre en oeuvre la télémetrie FLySky iBus. Chercher IBusBM dans le library manager de l'IDE Arduino ou directement dans [GitHub](https://github.com/bmellink/IBusBM).   
 
