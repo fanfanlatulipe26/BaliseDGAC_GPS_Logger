@@ -40,6 +40,9 @@ Cette balise peut être utilisée en dehors du contexte signalisation d'aéromod
 Les composants entourés d'un cadre noir sont utilisés uniquement si un module GSM est inclus dans la configuration.  
 Les noms des pins sur le module processeur ESP correspondent aux noms des pins qui doivent être définis dans le fichier fs_options.h (voir plus loin)
 
+**Alimentation de la balise**   
+Le régulateur AMS1117 3.3v impose en entrée une tension minimum de 4.6v. Cela ne pose en général pas de problèmes si la balise est alimentée par un ESC/BEC mais peut conduire à un disfonctionnement si l’alimentation du modèle est fournie par un pack de 4 piles 1.5v...
+
 ## **Matériel supporté**
 **Microcontrôleurs supportés:**
 - ESP8266 (par exemple module ESP01)
